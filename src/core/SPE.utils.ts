@@ -3,7 +3,7 @@
  * @namespace
  * @type {Object}
  */
-SPE.utils = {
+export const utils = {
     /**
      * A map of types used by `SPE.utils.ensureTypedArg` and
      * `SPE.utils.ensureArrayTypedArg` to compare types against.
