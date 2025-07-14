@@ -5,8 +5,8 @@
  * @property {Number} SPE.distributions.DISC Values will be distributed within a 2D disc.
  */
 
-import { shaderChunks } from "./shaders/SPE.shaderChunks"
-import { shaders } from "./shaders/SPE.shaders"
+import { shaderChunks } from "./shaders/shaderChunks"
+import { shaders } from "./shaders/shaders"
 
 /**
  * Namespace for Shader Particle Engine.

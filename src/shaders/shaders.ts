@@ -1,4 +1,4 @@
-import { shaderChunks } from "./SPE.shaderChunks"
+import { shaderChunks } from "./shaderChunks"
 import * as THREE from "three"
 
 export const shaders = {
