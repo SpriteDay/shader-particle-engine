@@ -5,6 +5,9 @@
  * @property {Number} SPE.distributions.DISC Values will be distributed within a 2D disc.
  */
 
+import { shaderChunks } from "./shaders/SPE.shaderChunks"
+import { shaders } from "./shaders/SPE.shaders"
+
 /**
  * Namespace for Shader Particle Engine.
  *
@@ -75,6 +78,8 @@ const SPE = {
      * @type {Number}
      */
     valueOverLifetimeLength: 4,
+    shaderChunks,
+    shaders,
 }
 
 export default SPE
