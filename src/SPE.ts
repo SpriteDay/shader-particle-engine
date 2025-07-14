@@ -13,8 +13,7 @@
  * @type {Object}
  * @namespace
  */
-var SPE = {
-
+const SPE = {
     /**
      * A map of supported distribution types used
      * by SPE.Emitter instances.
@@ -50,9 +49,8 @@ var SPE = {
          * Values will be distributed along a line.
          * @type {Number}
          */
-        LINE: 4
+        LINE: 4,
     },
-
 
     /**
      * Set this value to however many 'steps' you
@@ -76,13 +74,7 @@ var SPE = {
      *
      * @type {Number}
      */
-    valueOverLifetimeLength: 4
-};
+    valueOverLifetimeLength: 4,
+}
 
-// Module loader support:
-if ( typeof define === 'function' && define.amd ) {
-    define( 'spe', SPE );
-}
-else if ( typeof exports !== 'undefined' && typeof module !== 'undefined' ) {
-    module.exports = SPE;
-}
+export default SPE
