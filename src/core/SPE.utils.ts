@@ -15,25 +15,25 @@ SPE.utils = {
          * Boolean type.
          * @type {String}
          */
-        BOOLEAN: 'boolean',
+        BOOLEAN: "boolean",
 
         /**
          * String type.
          * @type {String}
          */
-        STRING: 'string',
+        STRING: "string",
 
         /**
          * Number type.
          * @type {String}
          */
-        NUMBER: 'number',
+        NUMBER: "number",
 
         /**
          * Object type.
          * @type {String}
          */
-        OBJECT: 'object'
+        OBJECT: "object",
     },
 
     /**
@@ -46,14 +46,13 @@ SPE.utils = {
      * @param  {(boolean|string|number|object)} defaultValue A default value to fallback on if the type check fails.
      * @return {(boolean|string|number|object)}              The given value if type check passes, or the default value if it fails.
      */
-    ensureTypedArg: function( arg, type, defaultValue ) {
-        'use strict';
+    ensureTypedArg: function (arg, type, defaultValue) {
+        "use strict"
 
-        if ( typeof arg === type ) {
-            return arg;
-        }
-        else {
-            return defaultValue;
+        if (typeof arg === type) {
+            return arg
+        } else {
+            return defaultValue
         }
     },
 
@@ -69,25 +68,25 @@ SPE.utils = {
      * @param  {(boolean|string|number|object)} defaultValue A default fallback value.
      * @return {(boolean|string|number|object)}              The given value if type check passes, or the default value if it fails.
      */
-    ensureArrayTypedArg: function( arg, type, defaultValue ) {
-        'use strict';
+    ensureArrayTypedArg: function (arg, type, defaultValue) {
+        "use strict"
 
         // If the argument being checked is an array, loop through
         // it and ensure all the values are of the correct type,
         // falling back to the defaultValue if any aren't.
-        if ( Array.isArray( arg ) ) {
-            for ( var i = arg.length - 1; i >= 0; --i ) {
-                if ( typeof arg[ i ] !== type ) {
-                    return defaultValue;
+        if (Array.isArray(arg)) {
+            for (var i = arg.length - 1; i >= 0; --i) {
+                if (typeof arg[i] !== type) {
+                    return defaultValue
                 }
             }
 
-            return arg;
+            return arg
         }
 
         // If the arg isn't an array then just fallback to
         // checking the type.
-        return this.ensureTypedArg( arg, type, defaultValue );
+        return this.ensureTypedArg(arg, type, defaultValue)
     },
 
     /**
@@ -98,14 +97,13 @@ SPE.utils = {
      * @param  {Object} defaultValue A default fallback value if instance check fails
      * @return {Object}              The given value if type check passes, or the default value if it fails.
      */
-    ensureInstanceOf: function( arg, instance, defaultValue ) {
-        'use strict';
+    ensureInstanceOf: function (arg, instance, defaultValue) {
+        "use strict"
 
-        if ( instance !== undefined && arg instanceof instance ) {
-            return arg;
-        }
-        else {
-            return defaultValue;
+        if (instance !== undefined && arg instanceof instance) {
+            return arg
+        } else {
+            return defaultValue
         }
     },
 
@@ -121,25 +119,28 @@ SPE.utils = {
      * @param  {Object} defaultValue A default fallback value if instance check fails
      * @return {Object}              The given value if type check passes, or the default value if it fails.
      */
-    ensureArrayInstanceOf: function( arg, instance, defaultValue ) {
-        'use strict';
+    ensureArrayInstanceOf: function (arg, instance, defaultValue) {
+        "use strict"
 
         // If the argument being checked is an array, loop through
         // it and ensure all the values are of the correct type,
         // falling back to the defaultValue if any aren't.
-        if ( Array.isArray( arg ) ) {
-            for ( var i = arg.length - 1; i >= 0; --i ) {
-                if ( instance !== undefined && arg[ i ] instanceof instance === false ) {
-                    return defaultValue;
+        if (Array.isArray(arg)) {
+            for (var i = arg.length - 1; i >= 0; --i) {
+                if (
+                    instance !== undefined &&
+                    arg[i] instanceof instance === false
+                ) {
+                    return defaultValue
                 }
             }
 
-            return arg;
+            return arg
         }
 
         // If the arg isn't an array then just fallback to
         // checking the type.
-        return this.ensureInstanceOf( arg, instance, defaultValue );
+        return this.ensureInstanceOf(arg, instance, defaultValue)
     },
 
     /**
@@ -154,31 +155,49 @@ SPE.utils = {
      * @param  {Number} minLength The minimum length of the array to create.
      * @param  {Number} maxLength The maximum length of the array to create.
      */
-    ensureValueOverLifetimeCompliance: function( property, minLength, maxLength ) {
-        'use strict';
+    ensureValueOverLifetimeCompliance: function (
+        property,
+        minLength,
+        maxLength,
+    ) {
+        "use strict"
 
-        minLength = minLength || 3;
-        maxLength = maxLength || 3;
+        minLength = minLength || 3
+        maxLength = maxLength || 3
 
         // First, ensure both properties are arrays.
-        if ( Array.isArray( property._value ) === false ) {
-            property._value = [ property._value ];
+        if (Array.isArray(property._value) === false) {
+            property._value = [property._value]
         }
 
-        if ( Array.isArray( property._spread ) === false ) {
-            property._spread = [ property._spread ];
+        if (Array.isArray(property._spread) === false) {
+            property._spread = [property._spread]
         }
 
-        var valueLength = this.clamp( property._value.length, minLength, maxLength ),
-            spreadLength = this.clamp( property._spread.length, minLength, maxLength ),
-            desiredLength = Math.max( valueLength, spreadLength );
+        var valueLength = this.clamp(
+                property._value.length,
+                minLength,
+                maxLength,
+            ),
+            spreadLength = this.clamp(
+                property._spread.length,
+                minLength,
+                maxLength,
+            ),
+            desiredLength = Math.max(valueLength, spreadLength)
 
-        if ( property._value.length !== desiredLength ) {
-            property._value = this.interpolateArray( property._value, desiredLength );
+        if (property._value.length !== desiredLength) {
+            property._value = this.interpolateArray(
+                property._value,
+                desiredLength,
+            )
         }
 
-        if ( property._spread.length !== desiredLength ) {
-            property._spread = this.interpolateArray( property._spread, desiredLength );
+        if (property._spread.length !== desiredLength) {
+            property._spread = this.interpolateArray(
+                property._spread,
+                desiredLength,
+            )
         }
     },
 
@@ -194,30 +213,37 @@ SPE.utils = {
      * @param  {Number} newLength The length the array should be interpolated to.
      * @return {Array}           The interpolated array.
      */
-    interpolateArray: function( srcArray, newLength ) {
-        'use strict';
+    interpolateArray: function (srcArray, newLength) {
+        "use strict"
 
         var sourceLength = srcArray.length,
-            newArray = [ typeof srcArray[ 0 ].clone === 'function' ? srcArray[ 0 ].clone() : srcArray[ 0 ] ],
-            factor = ( sourceLength - 1 ) / ( newLength - 1 );
+            newArray = [
+                typeof srcArray[0].clone === "function"
+                    ? srcArray[0].clone()
+                    : srcArray[0],
+            ],
+            factor = (sourceLength - 1) / (newLength - 1)
 
-
-        for ( var i = 1; i < newLength - 1; ++i ) {
+        for (var i = 1; i < newLength - 1; ++i) {
             var f = i * factor,
-                before = Math.floor( f ),
-                after = Math.ceil( f ),
-                delta = f - before;
+                before = Math.floor(f),
+                after = Math.ceil(f),
+                delta = f - before
 
-            newArray[ i ] = this.lerpTypeAgnostic( srcArray[ before ], srcArray[ after ], delta );
+            newArray[i] = this.lerpTypeAgnostic(
+                srcArray[before],
+                srcArray[after],
+                delta,
+            )
         }
 
         newArray.push(
-            typeof srcArray[ sourceLength - 1 ].clone === 'function' ?
-            srcArray[ sourceLength - 1 ].clone() :
-            srcArray[ sourceLength - 1 ]
-        );
+            typeof srcArray[sourceLength - 1].clone === "function"
+                ? srcArray[sourceLength - 1].clone()
+                : srcArray[sourceLength - 1],
+        )
 
-        return newArray;
+        return newArray
     },
 
     /**
@@ -227,10 +253,10 @@ SPE.utils = {
      * @param  {Number} max   The maximum value.
      * @return {Number}       The clamped number.
      */
-    clamp: function( value, min, max ) {
-        'use strict';
+    clamp: function (value, min, max) {
+        "use strict"
 
-        return Math.max( min, Math.min( value, max ) );
+        return Math.max(min, Math.min(value, max))
     },
 
     /**
@@ -242,16 +268,16 @@ SPE.utils = {
      * @param  {Boolean} randomise Whether the value should be randomised.
      * @return {Number}           The result of the operation.
      */
-    zeroToEpsilon: function( value, randomise ) {
-        'use strict';
+    zeroToEpsilon: function (value, randomise) {
+        "use strict"
 
         var epsilon = 0.00001,
-            result = value;
+            result = value
 
-        result = randomise ? Math.random() * epsilon * 10 : epsilon;
+        result = randomise ? Math.random() * epsilon * 10 : epsilon
 
-        if ( value < 0 && value > -epsilon ) {
-            result = -result;
+        if (value < 0 && value > -epsilon) {
+            result = -result
         }
 
         // if ( value === 0 ) {
@@ -264,7 +290,7 @@ SPE.utils = {
         //     result = -( randomise ? Math.random() * epsilon * 10 : epsilon );
         // }
 
-        return result;
+        return result
     },
 
     /**
@@ -277,45 +303,53 @@ SPE.utils = {
      *                                               the start and end arguments aren't a supported type, or
      *                                               if their types do not match.
      */
-    lerpTypeAgnostic: function( start, end, delta ) {
-        'use strict';
+    lerpTypeAgnostic: function (start, end, delta) {
+        "use strict"
 
         var types = this.types,
-            out;
+            out
 
-        if ( typeof start === types.NUMBER && typeof end === types.NUMBER ) {
-            return start + ( ( end - start ) * delta );
-        }
-        else if ( start instanceof THREE.Vector2 && end instanceof THREE.Vector2 ) {
-            out = start.clone();
-            out.x = this.lerp( start.x, end.x, delta );
-            out.y = this.lerp( start.y, end.y, delta );
-            return out;
-        }
-        else if ( start instanceof THREE.Vector3 && end instanceof THREE.Vector3 ) {
-            out = start.clone();
-            out.x = this.lerp( start.x, end.x, delta );
-            out.y = this.lerp( start.y, end.y, delta );
-            out.z = this.lerp( start.z, end.z, delta );
-            return out;
-        }
-        else if ( start instanceof THREE.Vector4 && end instanceof THREE.Vector4 ) {
-            out = start.clone();
-            out.x = this.lerp( start.x, end.x, delta );
-            out.y = this.lerp( start.y, end.y, delta );
-            out.z = this.lerp( start.z, end.z, delta );
-            out.w = this.lerp( start.w, end.w, delta );
-            return out;
-        }
-        else if ( start instanceof THREE.Color && end instanceof THREE.Color ) {
-            out = start.clone();
-            out.r = this.lerp( start.r, end.r, delta );
-            out.g = this.lerp( start.g, end.g, delta );
-            out.b = this.lerp( start.b, end.b, delta );
-            return out;
-        }
-        else {
-            console.warn( 'Invalid argument types, or argument types do not match:', start, end );
+        if (typeof start === types.NUMBER && typeof end === types.NUMBER) {
+            return start + (end - start) * delta
+        } else if (
+            start instanceof THREE.Vector2 &&
+            end instanceof THREE.Vector2
+        ) {
+            out = start.clone()
+            out.x = this.lerp(start.x, end.x, delta)
+            out.y = this.lerp(start.y, end.y, delta)
+            return out
+        } else if (
+            start instanceof THREE.Vector3 &&
+            end instanceof THREE.Vector3
+        ) {
+            out = start.clone()
+            out.x = this.lerp(start.x, end.x, delta)
+            out.y = this.lerp(start.y, end.y, delta)
+            out.z = this.lerp(start.z, end.z, delta)
+            return out
+        } else if (
+            start instanceof THREE.Vector4 &&
+            end instanceof THREE.Vector4
+        ) {
+            out = start.clone()
+            out.x = this.lerp(start.x, end.x, delta)
+            out.y = this.lerp(start.y, end.y, delta)
+            out.z = this.lerp(start.z, end.z, delta)
+            out.w = this.lerp(start.w, end.w, delta)
+            return out
+        } else if (start instanceof THREE.Color && end instanceof THREE.Color) {
+            out = start.clone()
+            out.r = this.lerp(start.r, end.r, delta)
+            out.g = this.lerp(start.g, end.g, delta)
+            out.b = this.lerp(start.b, end.b, delta)
+            return out
+        } else {
+            console.warn(
+                "Invalid argument types, or argument types do not match:",
+                start,
+                end,
+            )
         }
     },
 
@@ -326,9 +360,9 @@ SPE.utils = {
      * @param  {Number} delta The position to interpolate to.
      * @return {Number}       The result of the lerp operation.
      */
-    lerp: function( start, end, delta ) {
-        'use strict';
-        return start + ( ( end - start ) * delta );
+    lerp: function (start, end, delta) {
+        "use strict"
+        return start + (end - start) * delta
     },
 
     /**
@@ -338,26 +372,26 @@ SPE.utils = {
      * @param  {Number} multiple The multiple to round to.
      * @return {Number}          The result of the round operation.
      */
-    roundToNearestMultiple: function( n, multiple ) {
-        'use strict';
+    roundToNearestMultiple: function (n, multiple) {
+        "use strict"
 
-        var remainder = 0;
+        var remainder = 0
 
-        if ( multiple === 0 ) {
-            return n;
+        if (multiple === 0) {
+            return n
         }
 
-        remainder = Math.abs( n ) % multiple;
+        remainder = Math.abs(n) % multiple
 
-        if ( remainder === 0 ) {
-            return n;
+        if (remainder === 0) {
+            return n
         }
 
-        if ( n < 0 ) {
-            return -( Math.abs( n ) - remainder );
+        if (n < 0) {
+            return -(Math.abs(n) - remainder)
         }
 
-        return n + multiple - remainder;
+        return n + multiple - remainder
     },
 
     /**
@@ -366,16 +400,16 @@ SPE.utils = {
      * @param  {Array} array The array of values to check equality of.
      * @return {Boolean}       Whether the array's values are all equal or not.
      */
-    arrayValuesAreEqual: function( array ) {
-        'use strict';
+    arrayValuesAreEqual: function (array) {
+        "use strict"
 
-        for ( var i = 0; i < array.length - 1; ++i ) {
-            if ( array[ i ] !== array[ i + 1 ] ) {
-                return false;
+        for (var i = 0; i < array.length - 1; ++i) {
+            if (array[i] !== array[i + 1]) {
+                return false
             }
         }
 
-        return true;
+        return true
     },
 
     // colorsAreEqual: function() {
@@ -398,7 +432,6 @@ SPE.utils = {
     //     return true;
     // },
 
-
     /**
      * Given a start value and a spread value, create and return a random
      * number.
@@ -406,12 +439,10 @@ SPE.utils = {
      * @param  {Number} spread The size of the random variance to apply.
      * @return {Number}        A randomised number.
      */
-    randomFloat: function( base, spread ) {
-        'use strict';
-        return base + spread * ( Math.random() - 0.5 );
+    randomFloat: function (base, spread) {
+        "use strict"
+        return base + spread * (Math.random() - 0.5)
     },
-
-
 
     /**
      * Given an SPE.ShaderAttribute instance, and various other settings,
@@ -423,24 +454,30 @@ SPE.utils = {
      * @param  {Object} spread      THREE.Vector3 instance describing the random variance to apply to the start value.
      * @param  {Object} spreadClamp THREE.Vector3 instance describing the multiples to clamp the randomness to.
      */
-    randomVector3: function( attribute, index, base, spread, spreadClamp ) {
-        'use strict';
+    randomVector3: function (attribute, index, base, spread, spreadClamp) {
+        "use strict"
 
-        var x = base.x + ( Math.random() * spread.x - ( spread.x * 0.5 ) ),
-            y = base.y + ( Math.random() * spread.y - ( spread.y * 0.5 ) ),
-            z = base.z + ( Math.random() * spread.z - ( spread.z * 0.5 ) );
+        var x = base.x + (Math.random() * spread.x - spread.x * 0.5),
+            y = base.y + (Math.random() * spread.y - spread.y * 0.5),
+            z = base.z + (Math.random() * spread.z - spread.z * 0.5)
 
         // var x = this.randomFloat( base.x, spread.x ),
         // y = this.randomFloat( base.y, spread.y ),
         // z = this.randomFloat( base.z, spread.z );
 
-        if ( spreadClamp ) {
-            x = -spreadClamp.x * 0.5 + this.roundToNearestMultiple( x, spreadClamp.x );
-            y = -spreadClamp.y * 0.5 + this.roundToNearestMultiple( y, spreadClamp.y );
-            z = -spreadClamp.z * 0.5 + this.roundToNearestMultiple( z, spreadClamp.z );
+        if (spreadClamp) {
+            x =
+                -spreadClamp.x * 0.5 +
+                this.roundToNearestMultiple(x, spreadClamp.x)
+            y =
+                -spreadClamp.y * 0.5 +
+                this.roundToNearestMultiple(y, spreadClamp.y)
+            z =
+                -spreadClamp.z * 0.5 +
+                this.roundToNearestMultiple(z, spreadClamp.z)
         }
 
-        attribute.typedArray.setVec3Components( index, x, y, z );
+        attribute.typedArray.setVec3Components(index, x, y, z)
     },
 
     /**
@@ -451,26 +488,24 @@ SPE.utils = {
      * @param  {Object} base      THREE.Color instance describing the start color.
      * @param  {Object} spread    THREE.Vector3 instance describing the random variance to apply to the start color.
      */
-    randomColor: function( attribute, index, base, spread ) {
-        'use strict';
+    randomColor: function (attribute, index, base, spread) {
+        "use strict"
 
-        var r = base.r + ( Math.random() * spread.x ),
-            g = base.g + ( Math.random() * spread.y ),
-            b = base.b + ( Math.random() * spread.z );
+        var r = base.r + Math.random() * spread.x,
+            g = base.g + Math.random() * spread.y,
+            b = base.b + Math.random() * spread.z
 
-        r = this.clamp( r, 0, 1 );
-        g = this.clamp( g, 0, 1 );
-        b = this.clamp( b, 0, 1 );
+        r = this.clamp(r, 0, 1)
+        g = this.clamp(g, 0, 1)
+        b = this.clamp(b, 0, 1)
 
-
-        attribute.typedArray.setVec3Components( index, r, g, b );
+        attribute.typedArray.setVec3Components(index, r, g, b)
     },
 
+    randomColorAsHex: (function () {
+        "use strict"
 
-    randomColorAsHex: ( function() {
-        'use strict';
-
-        var workingColor = new THREE.Color();
+        var workingColor = new THREE.Color()
 
         /**
          * Assigns a random color value, encoded as a hex value in decimal
@@ -480,29 +515,38 @@ SPE.utils = {
          * @param  {Object} base      THREE.Color instance describing the start color.
          * @param  {Object} spread    THREE.Vector3 instance describing the random variance to apply to the start color.
          */
-        return function( attribute, index, base, spread ) {
+        return function (attribute, index, base, spread) {
             var numItems = base.length,
-                colors = [];
+                colors = []
 
-            for ( var i = 0; i < numItems; ++i ) {
-                var spreadVector = spread[ i ];
+            for (var i = 0; i < numItems; ++i) {
+                var spreadVector = spread[i]
 
-                workingColor.copy( base[ i ] );
+                workingColor.copy(base[i])
 
-                workingColor.r += ( Math.random() * spreadVector.x ) - ( spreadVector.x * 0.5 );
-                workingColor.g += ( Math.random() * spreadVector.y ) - ( spreadVector.y * 0.5 );
-                workingColor.b += ( Math.random() * spreadVector.z ) - ( spreadVector.z * 0.5 );
+                workingColor.r +=
+                    Math.random() * spreadVector.x - spreadVector.x * 0.5
+                workingColor.g +=
+                    Math.random() * spreadVector.y - spreadVector.y * 0.5
+                workingColor.b +=
+                    Math.random() * spreadVector.z - spreadVector.z * 0.5
 
-                workingColor.r = this.clamp( workingColor.r, 0, 1 );
-                workingColor.g = this.clamp( workingColor.g, 0, 1 );
-                workingColor.b = this.clamp( workingColor.b, 0, 1 );
+                workingColor.r = this.clamp(workingColor.r, 0, 1)
+                workingColor.g = this.clamp(workingColor.g, 0, 1)
+                workingColor.b = this.clamp(workingColor.b, 0, 1)
 
-                colors.push( workingColor.getHex() );
+                colors.push(workingColor.getHex())
             }
 
-            attribute.typedArray.setVec4Components( index, colors[ 0 ], colors[ 1 ], colors[ 2 ], colors[ 3 ] );
-        };
-    }() ),
+            attribute.typedArray.setVec4Components(
+                index,
+                colors[0],
+                colors[1],
+                colors[2],
+                colors[3],
+            )
+        }
+    })(),
 
     /**
      * Given an SPE.ShaderAttribute instance, and various other settings,
@@ -513,13 +557,13 @@ SPE.utils = {
      * @param  {Object} start       THREE.Vector3 instance describing the start line position.
      * @param  {Object} end         THREE.Vector3 instance describing the end line position.
      */
-    randomVector3OnLine: function( attribute, index, start, end ) {
-        'use strict';
-        var pos = start.clone();
+    randomVector3OnLine: function (attribute, index, start, end) {
+        "use strict"
+        var pos = start.clone()
 
-        pos.lerp( end, Math.random() );
+        pos.lerp(end, Math.random())
 
-        attribute.typedArray.setVec3Components( index, pos.x, pos.y, pos.z );
+        attribute.typedArray.setVec3Components(index, pos.x, pos.y, pos.z)
     },
 
     /**
@@ -543,51 +587,53 @@ SPE.utils = {
      * @param  {Object} radiusScale       THREE.Vector3 instance describing the scale of each axis of the sphere.
      * @param  {Number} radiusSpreadClamp What numeric multiple the projected value should be clamped to.
      */
-    randomVector3OnSphere: function(
-        attribute, index, base, radius, radiusSpread, radiusScale, radiusSpreadClamp, distributionClamp
+    randomVector3OnSphere: function (
+        attribute,
+        index,
+        base,
+        radius,
+        radiusSpread,
+        radiusScale,
+        radiusSpreadClamp,
+        distributionClamp,
     ) {
-        'use strict';
+        "use strict"
 
         var depth = 2 * Math.random() - 1,
             t = 6.2832 * Math.random(),
-            r = Math.sqrt( 1 - depth * depth ),
-            rand = this.randomFloat( radius, radiusSpread ),
+            r = Math.sqrt(1 - depth * depth),
+            rand = this.randomFloat(radius, radiusSpread),
             x = 0,
             y = 0,
-            z = 0;
+            z = 0
 
-
-        if ( radiusSpreadClamp ) {
-            rand = Math.round( rand / radiusSpreadClamp ) * radiusSpreadClamp;
+        if (radiusSpreadClamp) {
+            rand = Math.round(rand / radiusSpreadClamp) * radiusSpreadClamp
         }
 
-
-
         // Set position on sphere
-        x = r * Math.cos( t ) * rand;
-        y = r * Math.sin( t ) * rand;
-        z = depth * rand;
+        x = r * Math.cos(t) * rand
+        y = r * Math.sin(t) * rand
+        z = depth * rand
 
         // Apply radius scale to this position
-        x *= radiusScale.x;
-        y *= radiusScale.y;
-        z *= radiusScale.z;
+        x *= radiusScale.x
+        y *= radiusScale.y
+        z *= radiusScale.z
 
         // Translate to the base position.
-        x += base.x;
-        y += base.y;
-        z += base.z;
+        x += base.x
+        y += base.y
+        z += base.z
 
         // Set the values in the typed array.
-        attribute.typedArray.setVec3Components( index, x, y, z );
+        attribute.typedArray.setVec3Components(index, x, y, z)
     },
 
-    seededRandom: function( seed ) {
-        var x = Math.sin( seed ) * 10000;
-        return x - ( x | 0 );
+    seededRandom: function (seed) {
+        var x = Math.sin(seed) * 10000
+        return x - (x | 0)
     },
-
-
 
     /**
      * Assigns a random vector 3 value to an SPE.ShaderAttribute instance, projecting the
@@ -601,72 +647,48 @@ SPE.utils = {
      * @param  {Object} radiusScale       THREE.Vector3 instance describing the scale of each axis of the disc. The z-component is ignored.
      * @param  {Number} radiusSpreadClamp What numeric multiple the projected value should be clamped to.
      */
-    randomVector3OnDisc: function( attribute, index, base, radius, radiusSpread, radiusScale, radiusSpreadClamp ) {
-        'use strict';
+    randomVector3OnDisc: function (
+        attribute,
+        index,
+        base,
+        radius,
+        radiusSpread,
+        radiusScale,
+        radiusSpreadClamp,
+    ) {
+        "use strict"
 
         var t = 6.2832 * Math.random(),
-            rand = Math.abs( this.randomFloat( radius, radiusSpread ) ),
+            rand = Math.abs(this.randomFloat(radius, radiusSpread)),
             x = 0,
             y = 0,
-            z = 0;
+            z = 0
 
-        if ( radiusSpreadClamp ) {
-            rand = Math.round( rand / radiusSpreadClamp ) * radiusSpreadClamp;
+        if (radiusSpreadClamp) {
+            rand = Math.round(rand / radiusSpreadClamp) * radiusSpreadClamp
         }
 
         // Set position on sphere
-        x = Math.cos( t ) * rand;
-        y = Math.sin( t ) * rand;
+        x = Math.cos(t) * rand
+        y = Math.sin(t) * rand
 
         // Apply radius scale to this position
-        x *= radiusScale.x;
-        y *= radiusScale.y;
+        x *= radiusScale.x
+        y *= radiusScale.y
 
         // Translate to the base position.
-        x += base.x;
-        y += base.y;
-        z += base.z;
+        x += base.x
+        y += base.y
+        z += base.z
 
         // Set the values in the typed array.
-        attribute.typedArray.setVec3Components( index, x, y, z );
+        attribute.typedArray.setVec3Components(index, x, y, z)
     },
 
-    randomDirectionVector3OnSphere: ( function() {
-        'use strict';
+    randomDirectionVector3OnSphere: (function () {
+        "use strict"
 
-        var v = new THREE.Vector3();
-
-        /**
-         * Given an SPE.ShaderAttribute instance, create a direction vector from the given
-         * position, using `speed` as the magnitude. Values are saved to the attribute.
-         *
-         * @param  {Object} attribute       The instance of SPE.ShaderAttribute to save the result to.
-         * @param  {Number} index           The offset in the attribute's TypedArray to save the result from.
-         * @param  {Number} posX            The particle's x coordinate.
-         * @param  {Number} posY            The particle's y coordinate.
-         * @param  {Number} posZ            The particle's z coordinate.
-         * @param  {Object} emitterPosition THREE.Vector3 instance describing the emitter's base position.
-         * @param  {Number} speed           The magnitude to apply to the vector.
-         * @param  {Number} speedSpread     The amount of randomness to apply to the magnitude.
-         */
-        return function( attribute, index, posX, posY, posZ, emitterPosition, speed, speedSpread ) {
-            v.copy( emitterPosition );
-
-            v.x -= posX;
-            v.y -= posY;
-            v.z -= posZ;
-
-            v.normalize().multiplyScalar( -this.randomFloat( speed, speedSpread ) );
-
-            attribute.typedArray.setVec3Components( index, v.x, v.y, v.z );
-        };
-    }() ),
-
-
-    randomDirectionVector3OnDisc: ( function() {
-        'use strict';
-
-        var v = new THREE.Vector3();
+        var v = new THREE.Vector3()
 
         /**
          * Given an SPE.ShaderAttribute instance, create a direction vector from the given
@@ -681,26 +703,75 @@ SPE.utils = {
          * @param  {Number} speed           The magnitude to apply to the vector.
          * @param  {Number} speedSpread     The amount of randomness to apply to the magnitude.
          */
-        return function( attribute, index, posX, posY, posZ, emitterPosition, speed, speedSpread ) {
-            v.copy( emitterPosition );
+        return function (
+            attribute,
+            index,
+            posX,
+            posY,
+            posZ,
+            emitterPosition,
+            speed,
+            speedSpread,
+        ) {
+            v.copy(emitterPosition)
 
-            v.x -= posX;
-            v.y -= posY;
-            v.z -= posZ;
+            v.x -= posX
+            v.y -= posY
+            v.z -= posZ
 
-            v.normalize().multiplyScalar( -this.randomFloat( speed, speedSpread ) );
+            v.normalize().multiplyScalar(-this.randomFloat(speed, speedSpread))
 
-            attribute.typedArray.setVec3Components( index, v.x, v.y, 0 );
-        };
-    }() ),
+            attribute.typedArray.setVec3Components(index, v.x, v.y, v.z)
+        }
+    })(),
 
-    getPackedRotationAxis: ( function() {
-        'use strict';
+    randomDirectionVector3OnDisc: (function () {
+        "use strict"
+
+        var v = new THREE.Vector3()
+
+        /**
+         * Given an SPE.ShaderAttribute instance, create a direction vector from the given
+         * position, using `speed` as the magnitude. Values are saved to the attribute.
+         *
+         * @param  {Object} attribute       The instance of SPE.ShaderAttribute to save the result to.
+         * @param  {Number} index           The offset in the attribute's TypedArray to save the result from.
+         * @param  {Number} posX            The particle's x coordinate.
+         * @param  {Number} posY            The particle's y coordinate.
+         * @param  {Number} posZ            The particle's z coordinate.
+         * @param  {Object} emitterPosition THREE.Vector3 instance describing the emitter's base position.
+         * @param  {Number} speed           The magnitude to apply to the vector.
+         * @param  {Number} speedSpread     The amount of randomness to apply to the magnitude.
+         */
+        return function (
+            attribute,
+            index,
+            posX,
+            posY,
+            posZ,
+            emitterPosition,
+            speed,
+            speedSpread,
+        ) {
+            v.copy(emitterPosition)
+
+            v.x -= posX
+            v.y -= posY
+            v.z -= posZ
+
+            v.normalize().multiplyScalar(-this.randomFloat(speed, speedSpread))
+
+            attribute.typedArray.setVec3Components(index, v.x, v.y, 0)
+        }
+    })(),
+
+    getPackedRotationAxis: (function () {
+        "use strict"
 
         var v = new THREE.Vector3(),
             vSpread = new THREE.Vector3(),
             c = new THREE.Color(),
-            addOne = new THREE.Vector3( 1, 1, 1 );
+            addOne = new THREE.Vector3(1, 1, 1)
 
         /**
          * Given a rotation axis, and a rotation axis spread vector,
@@ -710,23 +781,23 @@ SPE.utils = {
          * @param  {Object} axisSpread THREE.Vector3 instance describing the amount of randomness to apply to the rotation axis.
          * @return {Number}            The packed rotation axis, with randomness.
          */
-        return function( axis, axisSpread ) {
-            v.copy( axis ).normalize();
-            vSpread.copy( axisSpread ).normalize();
+        return function (axis, axisSpread) {
+            v.copy(axis).normalize()
+            vSpread.copy(axisSpread).normalize()
 
-            v.x += ( -axisSpread.x * 0.5 ) + ( Math.random() * axisSpread.x );
-            v.y += ( -axisSpread.y * 0.5 ) + ( Math.random() * axisSpread.y );
-            v.z += ( -axisSpread.z * 0.5 ) + ( Math.random() * axisSpread.z );
+            v.x += -axisSpread.x * 0.5 + Math.random() * axisSpread.x
+            v.y += -axisSpread.y * 0.5 + Math.random() * axisSpread.y
+            v.z += -axisSpread.z * 0.5 + Math.random() * axisSpread.z
 
             // v.x = Math.abs( v.x );
             // v.y = Math.abs( v.y );
             // v.z = Math.abs( v.z );
 
-            v.normalize().add( addOne ).multiplyScalar( 0.5 );
+            v.normalize().add(addOne).multiplyScalar(0.5)
 
-            c.setRGB( v.x, v.y, v.z );
+            c.setRGB(v.x, v.y, v.z)
 
-            return c.getHex();
-        };
-    }() )
-};
+            return c.getHex()
+        }
+    })(),
+}
