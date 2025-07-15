@@ -186,6 +186,7 @@ type EmitterOptions = {
     radius?: {
         value?: number
         spread?: number
+        randomise?: boolean
     }
     drag?: {
         value?: number
@@ -308,6 +309,23 @@ export class Emitter {
     activeParticleCount: number
     group: Group | null
     attributes: Group["attributes"] | null
+    paramsArray: null
+
+    resetFlags: {
+        position: boolean
+        velocity: boolean
+        acceleration: boolean
+        rotation: boolean
+        rotationCenter: boolean
+        size: boolean
+        color: boolean
+        opacity: boolean
+        angle: boolean
+    }
+
+    updateFlags: Record<string, boolean>
+    updateCounts: Record<string, number>
+    updateMap: Record<string, string>
 
     /**
      * The SPE.Emitter class.
@@ -567,7 +585,7 @@ export class Emitter {
                 0,
             ),
             _randomise: utils.ensureTypedArg(
-                options.position.randomise,
+                options.position?.randomise,
                 types.BOOLEAN,
                 false,
             ),
@@ -687,7 +705,7 @@ export class Emitter {
             //     utils.ensureTypedArg( options.wiggle.randomise, types.BOOLEAN, !!options.wiggle.spread ),
             position:
                 utils.ensureTypedArg(
-                    options.position.randomise,
+                    options.position?.randomise,
                     types.BOOLEAN,
                     false,
                 ) ||
@@ -697,13 +715,13 @@ export class Emitter {
                     false,
                 ),
             velocity: utils.ensureTypedArg(
-                options.velocity.randomise,
+                options.velocity?.randomise,
                 types.BOOLEAN,
                 false,
             ),
             acceleration:
                 utils.ensureTypedArg(
-                    options.acceleration.randomise,
+                    options.acceleration?.randomise,
                     types.BOOLEAN,
                     false,
                 ) ||
