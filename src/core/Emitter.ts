@@ -1,8 +1,9 @@
 import * as THREE from "three"
 import { utils } from "./utils"
 import { distributions, valueOverLifetimeLength } from "../constants"
-import { Distribution, WithGetters } from "../types"
+import { Distribution, TypedArray, WithGetters } from "../types"
 import { Group } from "./Group"
+import { ShaderAttribute } from "../helpers/ShaderAttribute"
 
 /**
  * An SPE.Emitter instance.
@@ -308,7 +309,7 @@ export class Emitter {
     activeParticleCount: number
     group: Group | null
     attributes: Group["attributes"] | null
-    paramsArray: null
+    paramsArray: TypedArray | null | undefined
 
     resetFlags: {
         position: boolean
@@ -1128,60 +1129,81 @@ export class Emitter {
         }
     }
 
-    _assignAbsLifetimeValue(index, propName) {
+    _assignAbsLifetimeValue(
+        index: number,
+        propName: keyof typeof this.updateMap,
+    ) {
         "use strict"
 
-        var array = this.attributes[propName].typedArray,
-            prop = this[propName],
-            utils = utils,
+        var array = (
+                this.attributes![
+                    propName as keyof typeof this.attributes
+                ] as unknown as ShaderAttribute
+            ).typedArray,
+            prop = this[propName as keyof typeof this],
             value
 
         if (
+            // @ts-expect-error - it was like that originally
             utils.arrayValuesAreEqual(prop._value) &&
+            // @ts-expect-error - it was like that originally
             utils.arrayValuesAreEqual(prop._spread)
         ) {
+            // @ts-expect-error - it was like that originally
             value = Math.abs(utils.randomFloat(prop._value[0], prop._spread[0]))
+            // @ts-expect-error - it was like that originally
             array.setVec4Components(index, value, value, value, value)
         } else {
+            // @ts-expect-error - it was like that originally
             array.setVec4Components(
                 index,
+                // @ts-expect-error - it was like that originally
                 Math.abs(utils.randomFloat(prop._value[0], prop._spread[0])),
+                // @ts-expect-error - it was like that originally
                 Math.abs(utils.randomFloat(prop._value[1], prop._spread[1])),
+                // @ts-expect-error - it was like that originally
                 Math.abs(utils.randomFloat(prop._value[2], prop._spread[2])),
+                // @ts-expect-error - it was like that originally
                 Math.abs(utils.randomFloat(prop._value[3], prop._spread[3])),
             )
         }
     }
 
-    _assignAngleValue(index) {
+    _assignAngleValue(index: number) {
         "use strict"
 
-        var array = this.attributes.angle.typedArray,
+        var array = this.attributes?.angle.typedArray,
             prop = this.angle,
-            utils = utils,
             value
 
         if (
+            // @ts-expect-error - it was like that originally
             utils.arrayValuesAreEqual(prop._value) &&
+            // @ts-expect-error - it was like that originally
             utils.arrayValuesAreEqual(prop._spread)
         ) {
+            // @ts-expect-error - it was like that originally
             value = utils.randomFloat(prop._value[0], prop._spread[0])
-            array.setVec4Components(index, value, value, value, value)
+            array?.setVec4Components(index, value, value, value, value)
         } else {
-            array.setVec4Components(
+            array?.setVec4Components(
                 index,
+                // @ts-expect-error - it was like that originally
                 utils.randomFloat(prop._value[0], prop._spread[0]),
+                // @ts-expect-error - it was like that originally
                 utils.randomFloat(prop._value[1], prop._spread[1]),
+                // @ts-expect-error - it was like that originally
                 utils.randomFloat(prop._value[2], prop._spread[2]),
+                // @ts-expect-error - it was like that originally
                 utils.randomFloat(prop._value[3], prop._spread[3]),
             )
         }
     }
 
-    _assignParamsValue(index) {
+    _assignParamsValue(index: number) {
         "use strict"
 
-        this.attributes.params.typedArray.setVec4Components(
+        this.attributes?.params.typedArray!.setVec4Components(
             index,
             this.isStatic ? 1 : 0,
             0.0,
@@ -1192,10 +1214,10 @@ export class Emitter {
         )
     }
 
-    _assignRotationValue(index) {
+    _assignRotationValue(index: number) {
         "use strict"
 
-        this.attributes.rotation.typedArray.setVec3Components(
+        this.attributes?.rotation.typedArray?.setVec3Components(
             index,
             utils.getPackedRotationAxis(
                 this.rotation._axis,
@@ -1205,23 +1227,23 @@ export class Emitter {
             this.rotation._static ? 0 : 1,
         )
 
-        this.attributes.rotationCenter.typedArray.setVec3(
+        this.attributes?.rotationCenter.typedArray?.setVec3(
             index,
             this.rotation._center,
         )
     }
 
-    _assignColorValue(index) {
+    _assignColorValue(index: number) {
         "use strict"
         utils.randomColorAsHex(
-            this.attributes.color,
+            this.attributes!.color,
             index,
-            this.color._value,
-            this.color._spread,
+            this.color._value as THREE.Color[],
+            this.color._spread as THREE.Vector3[],
         )
     }
 
-    _resetParticle(index) {
+    _resetParticle(index: number) {
         "use strict"
 
         var resetFlags = this.resetFlags,
@@ -1232,10 +1254,13 @@ export class Emitter {
             updateFlag
 
         for (var i = this.attributeCount - 1; i >= 0; --i) {
-            key = keys[i]
+            key = keys![i]
             updateFlag = updateFlags[key]
 
-            if (resetFlags[key] === true || updateFlag === true) {
+            if (
+                resetFlags[key as keyof typeof resetFlags] === true ||
+                updateFlag === true
+            ) {
                 this._assignValue(key, index)
                 this._updateAttributeUpdateRange(key, index)
 
@@ -1252,26 +1277,30 @@ export class Emitter {
         }
     }
 
-    _updateAttributeUpdateRange(attr, i) {
+    _updateAttributeUpdateRange(attr: keyof Group["attributes"], i: number) {
         "use strict"
 
         var ranges = this.bufferUpdateRanges[attr]
 
-        ranges.min = Math.min(i, ranges.min)
-        ranges.max = Math.max(i, ranges.max)
+        ranges!.min = Math.min(i, ranges!.min)
+        ranges!.max = Math.max(i, ranges!.max)
     }
 
     _resetBufferRanges() {
         "use strict"
 
         var ranges = this.bufferUpdateRanges,
+            // @ts-expect-error - it was like that originally
             keys = this.bufferUpdateKeys,
+            // @ts-expect-error - it was like that originally
             i = this.bufferUpdateCount - 1,
             key
 
         for (i; i >= 0; --i) {
             key = keys[i]
+            // @ts-expect-error - it was like that originally
             ranges[key].min = Number.POSITIVE_INFINITY
+            // @ts-expect-error - it was like that originally
             ranges[key].max = Number.NEGATIVE_INFINITY
         }
     }
@@ -1306,7 +1335,12 @@ export class Emitter {
         //  - Trigger event if count === this.particleCount.
     }
 
-    _checkParticleAges(start, end, params, dt) {
+    _checkParticleAges(
+        start: number,
+        end: number,
+        params: number[],
+        dt: number,
+    ) {
         "use strict"
         for (var i = end - 1, index, maxAge, age, alive; i >= start; --i) {
             index = i * 4
@@ -1346,7 +1380,12 @@ export class Emitter {
         }
     }
 
-    _activateParticles(activationStart, activationEnd, params, dtPerParticle) {
+    _activateParticles(
+        activationStart: number,
+        activationEnd: number,
+        params: number[],
+        dtPerParticle: number,
+    ) {
         "use strict"
         var direction = this.direction
 
@@ -1394,7 +1433,7 @@ export class Emitter {
      *
      * @param  {Number} dt The number of seconds to simulate (deltaTime)
      */
-    tick(dt) {
+    tick(dt: number) {
         "use strict"
 
         if (this.isStatic) {
@@ -1402,7 +1441,7 @@ export class Emitter {
         }
 
         if (this.paramsArray === null) {
-            this.paramsArray = this.attributes.params.typedArray.array
+            this.paramsArray = this.attributes?.params.typedArray?.array
         }
 
         var start = this.attributeOffset,
@@ -1416,6 +1455,7 @@ export class Emitter {
 
         // Increment age for those particles that are alive,
         // and kill off any particles whose age is over the limit.
+        // @ts-expect-error - it was like that originally
         this._checkParticleAges(start, end, params, dt)
 
         // If the emitter is dead, reset the age of the emitter to zero,
@@ -1439,7 +1479,7 @@ export class Emitter {
                     : activationIndex | 0,
             activationEnd = Math.min(
                 activationStart + ppsDt,
-                this.activationEnd,
+                this.activationEnd!,
             ),
             activationCount = (activationEnd - this.activationIndex) | 0,
             dtPerParticle = activationCount > 0 ? dt / activationCount : 0
@@ -1447,6 +1487,7 @@ export class Emitter {
         this._activateParticles(
             activationStart,
             activationEnd,
+            // @ts-expect-error - it was like that originally
             params,
             dtPerParticle,
         )
@@ -1480,17 +1521,22 @@ export class Emitter {
             var start = this.attributeOffset,
                 end = start + this.particleCount,
                 array = this.paramsArray,
-                attr = this.attributes.params.bufferAttribute
+                attr = this.attributes!.params.bufferAttribute
 
             for (var i = end - 1, index; i >= start; --i) {
                 index = i * 4
 
+                // @ts-expect-error - it was like that originally
                 array[index] = 0.0
+                // @ts-expect-error - it was like that originally
                 array[index + 1] = 0.0
             }
 
+            // @ts-expect-error - it was like that originally
             attr.updateRange.offset = 0
+            // @ts-expect-error - it was like that originally
             attr.updateRange.count = -1
+            // @ts-expect-error - it was like that originally
             attr.needsUpdate = true
         }
 

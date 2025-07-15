@@ -21,7 +21,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "fmt": "biome format --write ./src"
+    "fmt": "biome format --write ./src",
+    "ts": "tsc --noEmit"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",

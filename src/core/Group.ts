@@ -1,7 +1,7 @@
 /**
  * An SPE.Group instance.
- * @typedef {Object} Group
- * @see SPE.Group
+ *  {Object} Group
+ *  SPE.Group
  */
 
 import * as THREE from "three"

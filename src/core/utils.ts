@@ -688,7 +688,7 @@ export const utils = {
         radiusSpread: number,
         radiusScale: THREE.Vector3,
         radiusSpreadClamp: number,
-        distributionClamp?: number,
+        _distributionClamp?: number,
     ) {
         "use strict"
 
