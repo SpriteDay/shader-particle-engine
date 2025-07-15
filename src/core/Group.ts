@@ -8,6 +8,8 @@ import * as THREE from "three"
 import { ShaderAttribute } from "../helpers/ShaderAttribute"
 import { utils } from "./utils"
 import { Emitter } from "./Emitter"
+import { valueOverLifetimeLength } from "../constants"
+import { shaders } from "../shaders/shaders"
 
 /**
  * A map of options to configure an SPE.Group instance.
@@ -63,7 +65,7 @@ import { Emitter } from "./Emitter"
  */
 
 type GroupOptions = {
-    texture: {
+    texture?: {
         value?: THREE.Texture
         frames?: THREE.Vector2
         frameCount?: number
@@ -101,14 +103,32 @@ export class Group {
     emitters: Emitter[]
     emitterIDs: string[]
 
-    constructor(options: GroupOptions) {
+    _pool: unknown[]
+    _poolCreationSettings: null
+    _createNewWhenPoolEmpty: number
+
+    _attributesNeedRefresh: boolean
+    _attributesNeedDynamicReset: boolean
+
+    particleCount: number
+
+    constructor(options?: GroupOptions) {
         "use strict"
 
         var types = utils.types
 
         // Ensure we have a map of options to play with
-        utils.ensureTypedArg(options, types.OBJECT, {})
-        utils.ensureTypedArg(options.texture, types.OBJECT, {})
+        options = utils.ensureTypedArg(
+            options,
+            types.OBJECT,
+            {},
+        ) as GroupOptions
+
+        options.texture = utils.ensureTypedArg(
+            options.texture,
+            types.OBJECT,
+            {},
+        ) as GroupOptions["texture"]
 
         // Assign a UUID to this instance
         this.uuid = THREE.MathUtils.generateUUID()
@@ -124,22 +144,22 @@ export class Group {
         // Set properties used in the uniforms map, starting with the
         // texture stuff.
         this.texture = utils.ensureInstanceOf(
-            options.texture.value,
+            options.texture?.value,
             THREE.Texture,
             null,
         )
         this.textureFrames = utils.ensureInstanceOf(
-            options.texture.frames,
+            options.texture?.frames,
             THREE.Vector2,
             new THREE.Vector2(1, 1),
         )
         this.textureFrameCount = utils.ensureTypedArg(
-            options.texture.frameCount,
+            options.texture?.frameCount,
             types.NUMBER,
             this.textureFrames.x * this.textureFrames.y,
         )
         this.textureLoop = utils.ensureTypedArg(
-            options.texture.loop,
+            options.texture?.loop,
             types.NUMBER,
             1,
         )
@@ -258,7 +278,7 @@ export class Group {
         this.defines = {
             HAS_PERSPECTIVE: this.hasPerspective,
             COLORIZE: this.colorize,
-            VALUE_OVER_LIFETIME_LENGTH: SPE.valueOverLifetimeLength,
+            VALUE_OVER_LIFETIME_LENGTH: valueOverLifetimeLength,
 
             SHOULD_ROTATE_TEXTURE: false,
             SHOULD_ROTATE_PARTICLES: false,
@@ -291,8 +311,8 @@ export class Group {
         // particles.
         this.material = new THREE.ShaderMaterial({
             uniforms: this.uniforms,
-            vertexShader: SPE.shaders.vertex,
-            fragmentShader: SPE.shaders.fragment,
+            vertexShader: shaders.vertex,
+            fragmentShader: shaders.fragment,
             blending: this.blending,
             transparent: this.transparent,
             alphaTest: this.alphaTest,
@@ -525,7 +545,7 @@ export class Group {
      *
      * @param {Emitter} emitter The emitter to add to this group.
      */
-    removeEmitter(emitter) {
+    removeEmitter(emitter: Emitter) {
         "use strict"
 
         var emitterIndex = this.emitterIDs.indexOf(emitter.uuid)
@@ -535,7 +555,7 @@ export class Group {
         // Decided not to throw here, just in case a scene's
         // rendering would be paused. Logging an error instead
         // of stopping execution if exceptions aren't caught.
-        if (emitter instanceof SPE.Emitter === false) {
+        if (emitter instanceof Emitter === false) {
             console.error(
                 "`emitter` argument must be instance of SPE.Emitter. Was provided with:",
                 emitter,
@@ -603,7 +623,7 @@ export class Group {
         if (pool.length) {
             return pool.pop()
         } else if (createNew) {
-            var emitter = new SPE.Emitter(this._poolCreationSettings)
+            var emitter = new Emitter(this._poolCreationSettings)
 
             this.addEmitter(emitter)
 
@@ -619,10 +639,10 @@ export class Group {
      * @param  {ShaderParticleEmitter} emitter
      * @return {Group} This group instance.
      */
-    releaseIntoPool(emitter) {
+    releaseIntoPool(emitter: Emitter) {
         "use strict"
 
-        if (emitter instanceof SPE.Emitter === false) {
+        if (emitter instanceof Emitter === false) {
             console.error("Argument is not instanceof SPE.Emitter:", emitter)
             return
         }
@@ -663,9 +683,9 @@ export class Group {
         // Create the emitters, add them to this group and the pool.
         for (var i = 0; i < numEmitters; ++i) {
             if (Array.isArray(emitterOptions)) {
-                emitter = new SPE.Emitter(emitterOptions[i])
+                emitter = new Emitter(emitterOptions[i])
             } else {
-                emitter = new SPE.Emitter(emitterOptions)
+                emitter = new Emitter(emitterOptions)
             }
             this.addEmitter(emitter)
             this.releaseIntoPool(emitter)

@@ -26,7 +26,7 @@ export class ShaderAttribute {
     constructor(
         type: ShaderAttributType,
         dynamicBuffer: boolean,
-        arrayType: TypedArrayConstructor,
+        arrayType?: TypedArrayConstructor,
     ) {
         "use strict"
 
