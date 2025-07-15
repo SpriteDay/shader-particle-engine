@@ -16,6 +16,13 @@ type ShaderAttributType = keyof typeof ShaderAttribute.typeSizeMap
 export class ShaderAttribute {
     type: ShaderAttributType
     componentSize: number
+    arrayType: TypedArrayConstructor
+    typedArray: TypedArrayHelper | null
+    bufferAttribute: THREE.BufferAttribute | null
+    dynamicBuffer: boolean
+    updateMin: number
+    updateMax: number
+
     constructor(
         type: ShaderAttributType,
         dynamicBuffer: boolean,
@@ -115,12 +122,17 @@ export class ShaderAttribute {
         "use strict"
 
         const attr = this.bufferAttribute,
-            range = attr.updateRange
+            range = attr?.updateRange
+
+        if (!attr || !range) {
+            console.error("No attribute or range found")
+            return
+        }
 
         range.offset = this.updateMin
         range.count = Math.min(
             this.updateMax - this.updateMin + this.componentSize,
-            this.typedArray.array.length,
+            this.typedArray?.array.length || 0,
         )
         attr.needsUpdate = true
     }
@@ -137,6 +149,10 @@ export class ShaderAttribute {
 
     resetDynamic() {
         "use strict"
+        if (!this.bufferAttribute) {
+            console.error("No buffer attribute found")
+            return
+        }
         this.bufferAttribute.usage = this.dynamicBuffer
             ? THREE.DynamicDrawUsage
             : THREE.StaticDrawUsage
@@ -147,10 +163,10 @@ export class ShaderAttribute {
      * @param  {Number} start The start index of the splice. Will be multiplied by the number of components for this attribute.
      * @param  {Number} end The end index of the splice. Will be multiplied by the number of components for this attribute.
      */
-    splice(start, end) {
+    splice(start: number, end: number) {
         "use strict"
 
-        this.typedArray.splice(start, end)
+        this.typedArray?.splice(start, end)
 
         // Reset the reference to the attribute's typed array
         // since it has probably changed.
@@ -159,6 +175,11 @@ export class ShaderAttribute {
 
     forceUpdateAll() {
         "use strict"
+
+        if (!this.bufferAttribute || !this.typedArray) {
+            console.error("No buffer attribute or typed array found")
+            return
+        }
 
         this.bufferAttribute.array = this.typedArray.array
         this.bufferAttribute.updateRange.offset = 0
@@ -177,7 +198,7 @@ export class ShaderAttribute {
      *
      * @param  {Number} size The size of the typed array to create or update to.
      */
-    _ensureTypedArray(size) {
+    _ensureTypedArray(size: number) {
         "use strict"
 
         // Condition that's most likely to be true at the top: no change.
@@ -213,7 +234,7 @@ export class ShaderAttribute {
      *
      * @param  {Number} size The size of the typed array to create if one doesn't exist, or resize existing array to.
      */
-    _createBufferAttribute(size) {
+    _createBufferAttribute(size: number) {
         "use strict"
 
         // Make sure the typedArray is present and correct.
@@ -223,7 +244,7 @@ export class ShaderAttribute {
         // flag that it needs updating on the next render
         // cycle.
         if (this.bufferAttribute !== null) {
-            this.bufferAttribute.array = this.typedArray.array
+            this.bufferAttribute.array = this.typedArray?.array || []
 
             // Since THREE.js version 81, dynamic count calculation was removed
             // so I need to do it manually here.
@@ -241,7 +262,7 @@ export class ShaderAttribute {
         }
 
         this.bufferAttribute = new THREE.BufferAttribute(
-            this.typedArray.array,
+            this.typedArray?.array || [],
             this.componentSize,
         )
 

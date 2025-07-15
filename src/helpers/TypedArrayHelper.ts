@@ -26,7 +26,7 @@ export class TypedArrayHelper {
         TypedArrayConstructor: TypedArrayConstructor,
         size: number,
         componentSize: number,
-        indexOffset: number,
+        indexOffset?: number,
     ) {
         "use strict"
 
