@@ -150,7 +150,7 @@ export class TypedArrayHelper {
      * @param {TypedArray} array The array from which to copy; the source array.
      * @return {TypedArrayHelper} Instance of this class.
      */
-    setFromArray(index: number, array: TypedArray) {
+    setFromArray(index: number, array: TypedArray | number[]) {
         "use strict"
 
         var sourceArraySize = array.length,
@@ -174,7 +174,7 @@ export class TypedArrayHelper {
      * @param {Vector2} vec2  Any object that has `x` and `y` properties.
      * @return {TypedArrayHelper} Instance of this class.
      */
-    setVec2(index, vec2) {
+    setVec2(index: number, vec2: THREE.Vector2) {
         "use strict"
 
         return this.setVec2Components(index, vec2.x, vec2.y)
@@ -188,7 +188,7 @@ export class TypedArrayHelper {
      * @param {Number} y     The Vec2's `y` component.
      * @return {TypedArrayHelper} Instance of this class.
      */
-    setVec2Components(index, x, y) {
+    setVec2Components(index: number, x: number, y: number) {
         "use strict"
 
         var array = this.array,
@@ -206,7 +206,7 @@ export class TypedArrayHelper {
      * @param {Vector3} vec2  Any object that has `x`, `y`, and `z` properties.
      * @return {TypedArrayHelper} Instance of this class.
      */
-    setVec3(index, vec3) {
+    setVec3(index: number, vec3: THREE.Vector3) {
         "use strict"
 
         return this.setVec3Components(index, vec3.x, vec3.y, vec3.z)
@@ -221,7 +221,7 @@ export class TypedArrayHelper {
      * @param {Number} z     The Vec3's `z` component.
      * @return {TypedArrayHelper} Instance of this class.
      */
-    setVec3Components(index, x, y, z) {
+    setVec3Components(index: number, x: number, y: number, z: number) {
         "use strict"
 
         var array = this.array,
@@ -240,7 +240,7 @@ export class TypedArrayHelper {
      * @param {Vector4} vec2  Any object that has `x`, `y`, `z`, and `w` properties.
      * @return {TypedArrayHelper} Instance of this class.
      */
-    setVec4(index, vec4) {
+    setVec4(index: number, vec4: THREE.Vector4) {
         "use strict"
 
         return this.setVec4Components(index, vec4.x, vec4.y, vec4.z, vec4.w)
@@ -256,7 +256,13 @@ export class TypedArrayHelper {
      * @param {Number} w     The Vec4's `w` component.
      * @return {TypedArrayHelper} Instance of this class.
      */
-    setVec4Components(index, x, y, z, w) {
+    setVec4Components(
+        index: number,
+        x: number,
+        y: number,
+        z: number,
+        w: number,
+    ) {
         "use strict"
 
         var array = this.array,
@@ -276,7 +282,7 @@ export class TypedArrayHelper {
      * @param {Matrix3} mat3 The 3x3 matrix to set from. Must have a TypedArray property named `elements` to copy from.
      * @return {TypedArrayHelper} Instance of this class.
      */
-    setMat3(index, mat3) {
+    setMat3(index: number, mat3: THREE.Matrix3) {
         "use strict"
 
         return this.setFromArray(
@@ -292,7 +298,7 @@ export class TypedArrayHelper {
      * @param {Matrix4} mat3 The 4x4 matrix to set from. Must have a TypedArray property named `elements` to copy from.
      * @return {TypedArrayHelper} Instance of this class.
      */
-    setMat4(index, mat4) {
+    setMat4(index: number, mat4: THREE.Matrix4) {
         "use strict"
 
         return this.setFromArray(
@@ -308,7 +314,7 @@ export class TypedArrayHelper {
      * @param {Color} color  Any object that has `r`, `g`, and `b` properties.
      * @return {TypedArrayHelper} Instance of this class.
      */
-    setColor(index, color) {
+    setColor(index: number, color: THREE.Color) {
         "use strict"
 
         return this.setVec3Components(index, color.r, color.g, color.b)
@@ -321,7 +327,7 @@ export class TypedArrayHelper {
      * @param {Number} numericValue  The number to assign to this index in the array.
      * @return {TypedArrayHelper} Instance of this class.
      */
-    setNumber(index, numericValue) {
+    setNumber(index: number, numericValue: number) {
         "use strict"
 
         this.array[this.indexOffset + index * this.componentSize] = numericValue
@@ -338,7 +344,7 @@ export class TypedArrayHelper {
      * @param  {Number} index The index in the array to fetch.
      * @return {Number}       The value at the given index.
      */
-    getValueAtIndex(index) {
+    getValueAtIndex(index: number) {
         "use strict"
 
         return this.array[this.indexOffset + index]
