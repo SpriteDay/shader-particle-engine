@@ -445,10 +445,10 @@ export const utils = {
     },
 
     /**
-     * Given an SPE.ShaderAttribute instance, and various other settings,
+     * Given an ShaderAttribute instance, and various other settings,
      * assign values to the attribute's array in a `vec3` format.
      *
-     * @param  {Object} attribute   The instance of SPE.ShaderAttribute to save the result to.
+     * @param  {Object} attribute   The instance of ShaderAttribute to save the result to.
      * @param  {Number} index       The offset in the attribute's TypedArray to save the result from.
      * @param  {Object} base        THREE.Vector3 instance describing the start value.
      * @param  {Object} spread      THREE.Vector3 instance describing the random variance to apply to the start value.
@@ -483,7 +483,7 @@ export const utils = {
     /**
      * Given an SPE.Shader attribute instance, and various other settings,
      * assign Color values to the attribute.
-     * @param  {Object} attribute The instance of SPE.ShaderAttribute to save the result to.
+     * @param  {Object} attribute The instance of ShaderAttribute to save the result to.
      * @param  {Number} index     The offset in the attribute's TypedArray to save the result from.
      * @param  {Object} base      THREE.Color instance describing the start color.
      * @param  {Object} spread    THREE.Vector3 instance describing the random variance to apply to the start color.
@@ -509,8 +509,8 @@ export const utils = {
 
         /**
          * Assigns a random color value, encoded as a hex value in decimal
-         * format, to a SPE.ShaderAttribute instance.
-         * @param  {Object} attribute The instance of SPE.ShaderAttribute to save the result to.
+         * format, to a ShaderAttribute instance.
+         * @param  {Object} attribute The instance of ShaderAttribute to save the result to.
          * @param  {Number} index     The offset in the attribute's TypedArray to save the result from.
          * @param  {Object} base      THREE.Color instance describing the start color.
          * @param  {Object} spread    THREE.Vector3 instance describing the random variance to apply to the start color.
@@ -549,10 +549,10 @@ export const utils = {
     })(),
 
     /**
-     * Given an SPE.ShaderAttribute instance, and various other settings,
+     * Given an ShaderAttribute instance, and various other settings,
      * assign values to the attribute's array in a `vec3` format.
      *
-     * @param  {Object} attribute   The instance of SPE.ShaderAttribute to save the result to.
+     * @param  {Object} attribute   The instance of ShaderAttribute to save the result to.
      * @param  {Number} index       The offset in the attribute's TypedArray to save the result from.
      * @param  {Object} start       THREE.Vector3 instance describing the start line position.
      * @param  {Object} end         THREE.Vector3 instance describing the end line position.
@@ -569,17 +569,17 @@ export const utils = {
     /**
      * Given an SPE.Shader attribute instance, and various other settings,
      * assign Color values to the attribute.
-     * @param  {Object} attribute The instance of SPE.ShaderAttribute to save the result to.
+     * @param  {Object} attribute The instance of ShaderAttribute to save the result to.
      * @param  {Number} index     The offset in the attribute's TypedArray to save the result from.
      * @param  {Object} base      THREE.Color instance describing the start color.
      * @param  {Object} spread    THREE.Vector3 instance describing the random variance to apply to the start color.
      */
 
     /**
-     * Assigns a random vector 3 value to an SPE.ShaderAttribute instance, projecting the
+     * Assigns a random vector 3 value to an ShaderAttribute instance, projecting the
      * given values onto a sphere.
      *
-     * @param  {Object} attribute The instance of SPE.ShaderAttribute to save the result to.
+     * @param  {Object} attribute The instance of ShaderAttribute to save the result to.
      * @param  {Number} index     The offset in the attribute's TypedArray to save the result from.
      * @param  {Object} base              THREE.Vector3 instance describing the origin of the transform.
      * @param  {Number} radius            The radius of the sphere to project onto.
@@ -636,10 +636,10 @@ export const utils = {
     },
 
     /**
-     * Assigns a random vector 3 value to an SPE.ShaderAttribute instance, projecting the
+     * Assigns a random vector 3 value to an ShaderAttribute instance, projecting the
      * given values onto a 2d-disc.
      *
-     * @param  {Object} attribute The instance of SPE.ShaderAttribute to save the result to.
+     * @param  {Object} attribute The instance of ShaderAttribute to save the result to.
      * @param  {Number} index     The offset in the attribute's TypedArray to save the result from.
      * @param  {Object} base              THREE.Vector3 instance describing the origin of the transform.
      * @param  {Number} radius            The radius of the sphere to project onto.
@@ -691,10 +691,10 @@ export const utils = {
         var v = new THREE.Vector3()
 
         /**
-         * Given an SPE.ShaderAttribute instance, create a direction vector from the given
+         * Given an ShaderAttribute instance, create a direction vector from the given
          * position, using `speed` as the magnitude. Values are saved to the attribute.
          *
-         * @param  {Object} attribute       The instance of SPE.ShaderAttribute to save the result to.
+         * @param  {Object} attribute       The instance of ShaderAttribute to save the result to.
          * @param  {Number} index           The offset in the attribute's TypedArray to save the result from.
          * @param  {Number} posX            The particle's x coordinate.
          * @param  {Number} posY            The particle's y coordinate.
@@ -731,10 +731,10 @@ export const utils = {
         var v = new THREE.Vector3()
 
         /**
-         * Given an SPE.ShaderAttribute instance, create a direction vector from the given
+         * Given an ShaderAttribute instance, create a direction vector from the given
          * position, using `speed` as the magnitude. Values are saved to the attribute.
          *
-         * @param  {Object} attribute       The instance of SPE.ShaderAttribute to save the result to.
+         * @param  {Object} attribute       The instance of ShaderAttribute to save the result to.
          * @param  {Number} index           The offset in the attribute's TypedArray to save the result from.
          * @param  {Number} posX            The particle's x coordinate.
          * @param  {Number} posY            The particle's y coordinate.

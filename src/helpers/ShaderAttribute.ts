@@ -1,16 +1,21 @@
 import * as THREE from "three"
+import { TypedArrayHelper } from "./TypedArrayHelper"
 
 /**
  * A helper to handle creating and updating a THREE.BufferAttribute instance.
  *
  * @author  Luke Moody
  * @constructor
- * @param {String} type          The buffer attribute type. See SPE.ShaderAttribute.typeSizeMap for valid values.
+ * @param {String} type          The buffer attribute type. See ShaderAttribute.typeSizeMap for valid values.
  * @param {Boolean=} dynamicBuffer Whether this buffer attribute should be marked as dynamic or not.
  * @param {Function=} arrayType     A reference to a TypedArray constructor. Defaults to Float32Array if none provided.
  */
+
+type ShaderAttributType = keyof typeof ShaderAttribute.typeSizeMap
 export class ShaderAttribute {
-    constructor(type, dynamicBuffer, arrayType) {
+    type: ShaderAttributType
+    componentSize: number
+    constructor(type: ShaderAttributType | null, dynamicBuffer, arrayType) {
         "use strict"
 
         const typeMap = ShaderAttribute.typeSizeMap
@@ -163,7 +168,7 @@ export class ShaderAttribute {
      *
      * If it does, then it will ensure the typed array is of the correct size.
      *
-     * If not, a new SPE.TypedArrayHelper instance will be created.
+     * If not, a new TypedArrayHelper instance will be created.
      *
      * @param  {Number} size The size of the typed array to create or update to.
      */
@@ -186,7 +191,7 @@ export class ShaderAttribute {
 
         // This condition should only occur once in an attribute's lifecycle.
         else if (this.typedArray === null) {
-            this.typedArray = new SPE.TypedArrayHelper(
+            this.typedArray = new TypedArrayHelper(
                 this.arrayType,
                 size,
                 this.componentSize,

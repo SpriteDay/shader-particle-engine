@@ -4,6 +4,8 @@
  * @see SPE.Group
  */
 
+import { ShaderAttribute } from "../helpers/ShaderAttribute"
+
 /**
  * A map of options to configure an SPE.Group instance.
  * @typedef {Object} GroupOptions
@@ -230,18 +232,18 @@ export class Group {
 
         // Map of all attributes to be applied to the particles.
         //
-        // See SPE.ShaderAttribute for a bit more info on this bit.
+        // See ShaderAttribute for a bit more info on this bit.
         this.attributes = {
-            position: new SPE.ShaderAttribute("v3", true),
-            acceleration: new SPE.ShaderAttribute("v4", true), // w component is drag
-            velocity: new SPE.ShaderAttribute("v3", true),
-            rotation: new SPE.ShaderAttribute("v4", true),
-            rotationCenter: new SPE.ShaderAttribute("v3", true),
-            params: new SPE.ShaderAttribute("v4", true), // Holds (alive, age, delay, wiggle)
-            size: new SPE.ShaderAttribute("v4", true),
-            angle: new SPE.ShaderAttribute("v4", true),
-            color: new SPE.ShaderAttribute("v4", true),
-            opacity: new SPE.ShaderAttribute("v4", true),
+            position: new ShaderAttribute("v3", true),
+            acceleration: new ShaderAttribute("v4", true), // w component is drag
+            velocity: new ShaderAttribute("v3", true),
+            rotation: new ShaderAttribute("v4", true),
+            rotationCenter: new ShaderAttribute("v3", true),
+            params: new ShaderAttribute("v4", true), // Holds (alive, age, delay, wiggle)
+            size: new ShaderAttribute("v4", true),
+            angle: new ShaderAttribute("v4", true),
+            color: new ShaderAttribute("v4", true),
+            opacity: new ShaderAttribute("v4", true),
         }
 
         this.attributeKeys = Object.keys(this.attributes)
