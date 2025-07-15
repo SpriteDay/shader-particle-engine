@@ -4,14 +4,14 @@ import { distributions, valueOverLifetimeLength } from "../constants"
 
 /**
  * An SPE.Emitter instance.
- * @typedef {Object} Emitter
+ *  {Object} Emitter
  * @see SPE.Emitter
  */
 
 /**
  * A map of options to configure an SPE.Emitter instance.
  *
- * @typedef {Object} EmitterOptions
+ * {Object} EmitterOptions
  *
  * @property {distribution} [type=BOX] The default distribution this emitter should use to control
  *                         its particle's spawn position and force behaviour.
@@ -146,16 +146,87 @@ import { distributions, valueOverLifetimeLength } from "../constants"
  *
  */
 
-/**
- * The SPE.Emitter class.
- *
- * @constructor
- *
- * @param {EmitterOptions} options A map of options to configure the emitter.
- */
+type Distribution = (typeof distributions)[keyof typeof distributions]
 
-type EmitterOptions = {}
+type EmitterOptions = {
+    distribution: Distribution
+    particleCount: number
+    duration: number | null
+    isStatic: boolean
+    activeMultiplier: number
+    direction: number
+    maxAge: {
+        value: number
+        spread: number
+    }
+    position: {
+        value: THREE.Vector3
+        spread: THREE.Vector3
+        spreadClamp: THREE.Vector3
+        radius: number
+        radiusScale: THREE.Vector3
+        distribution: Distribution
+        randomise?: boolean
+    }
+    velocity: {
+        value: THREE.Vector3
+        spread: THREE.Vector3
+        distribution: Distribution
+        randomise?: boolean
+    }
+    acceleration: {
+        value: THREE.Vector3
+        spread: THREE.Vector3
+        distribution: Distribution
+        randomise?: boolean
+    }
+    drag: {
+        value: number
+        spread: number
+        randomise?: boolean
+    }
+    wiggle: {
+        value: number
+        spread: number
+    }
+    rotation: {
+        axis: THREE.Vector3
+        axisSpread: THREE.Vector3
+        angle: number
+        angleSpread: number
+        static: boolean
+        center: THREE.Vector3
+        randomise?: boolean
+    }
+    color: {
+        value: THREE.Color | THREE.Color[]
+        spread: THREE.Vector3 | THREE.Vector3[]
+        randomise?: boolean
+    }
+    opacity: {
+        value: number | number[]
+        spread: number | number[]
+        randomise?: boolean
+    }
+    size: {
+        value: number | number[]
+        spread: number | number[]
+        randomise?: boolean
+    }
+    angle: {
+        value: number | number[]
+        spread: number | number[]
+        randomise?: boolean
+    }
+}
 export class Emitter {
+    /**
+     * The SPE.Emitter class.
+     *
+     * @constructor
+     *
+     * @param {EmitterOptions} options A map of options to configure the emitter.
+     */
     constructor(options: EmitterOptions) {
         "use strict"
 
