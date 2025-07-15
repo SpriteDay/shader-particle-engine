@@ -1,6 +1,6 @@
 import * as THREE from "three"
 import { TypedArrayHelper } from "./TypedArrayHelper"
-import { TypedArrayConstructor } from "../types"
+import { type ShaderAttributType, TypedArrayConstructor } from "../types"
 
 /**
  * A helper to handle creating and updating a THREE.BufferAttribute instance.
@@ -11,8 +11,6 @@ import { TypedArrayConstructor } from "../types"
  * @param {Boolean=} dynamicBuffer Whether this buffer attribute should be marked as dynamic or not.
  * @param {Function=} arrayType     A reference to a TypedArray constructor. Defaults to Float32Array if none provided.
  */
-
-type ShaderAttributType = keyof typeof ShaderAttribute.typeSizeMap
 export class ShaderAttribute {
     type: ShaderAttributType
     componentSize: number

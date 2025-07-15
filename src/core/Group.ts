@@ -10,6 +10,7 @@ import { utils } from "./utils"
 import { Emitter } from "./Emitter"
 import { valueOverLifetimeLength } from "../constants"
 import { shaders } from "../shaders/shaders"
+import { Uniforms } from "../types"
 
 /**
  * A map of options to configure an SPE.Group instance.
@@ -111,6 +112,37 @@ export class Group {
     _attributesNeedDynamicReset: boolean
 
     particleCount: number
+
+    uniforms: Uniforms
+    defines: {
+        HAS_PERSPECTIVE: boolean
+        COLORIZE: boolean
+        VALUE_OVER_LIFETIME_LENGTH: number
+
+        SHOULD_ROTATE_TEXTURE: boolean
+        SHOULD_ROTATE_PARTICLES: boolean
+        SHOULD_WIGGLE_PARTICLES: boolean
+
+        SHOULD_CALCULATE_SPRITE: boolean
+    }
+
+    attributes: {
+        position: ShaderAttribute
+        acceleration: ShaderAttribute // w component is drag
+        velocity: ShaderAttribute
+        rotation: ShaderAttribute
+        rotationCenter: ShaderAttribute
+        params: ShaderAttribute // Holds (alive, age, delay, wiggle)
+        size: ShaderAttribute
+        angle: ShaderAttribute
+        color: ShaderAttribute
+        opacity: ShaderAttribute
+    }
+    attributeKeys: (keyof typeof this.attributes)[]
+    attributeCount: number
+    material: THREE.ShaderMaterial
+    geometry: THREE.BufferGeometry
+    mesh: THREE.Points
 
     constructor(options?: GroupOptions) {
         "use strict"
@@ -304,7 +336,9 @@ export class Group {
             opacity: new ShaderAttribute("v4", true),
         }
 
-        this.attributeKeys = Object.keys(this.attributes)
+        this.attributeKeys = Object.keys(
+            this.attributes,
+        ) as (keyof typeof this.attributes)[]
         this.attributeCount = this.attributeKeys.length
 
         // Create the ShaderMaterial instance that'll help render the
