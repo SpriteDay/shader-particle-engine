@@ -1,3 +1,5 @@
+import { distributions } from "./constants"
+
 export type TypedArrayConstructor =
     | typeof Int8Array
     | typeof Uint8Array
@@ -10,3 +12,5 @@ export type TypedArrayConstructor =
     | typeof Float64Array
 
 export type TypedArray = InstanceType<TypedArrayConstructor>
+
+export type Distribution = (typeof distributions)[keyof typeof distributions]

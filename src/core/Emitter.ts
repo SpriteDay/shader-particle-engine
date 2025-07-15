@@ -1,6 +1,7 @@
 import * as THREE from "three"
 import { utils } from "./utils"
 import { distributions, valueOverLifetimeLength } from "../constants"
+import { Distribution } from "../types"
 
 /**
  * An SPE.Emitter instance.
@@ -145,8 +146,6 @@ import { distributions, valueOverLifetimeLength } from "../constants"
  * @property {Boolean} [angle.randomise=false] When a particle is re-spawned, whether it's angle should be re-randomised or not. Can incur a performance hit.
  *
  */
-
-type Distribution = (typeof distributions)[keyof typeof distributions]
 
 type EmitterOptions = {
     distribution: Distribution
