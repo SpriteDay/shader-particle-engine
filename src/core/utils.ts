@@ -1,3 +1,12 @@
+type TypeMap = {
+    boolean: boolean
+    string: string
+    number: number
+    object: object
+}
+
+type TypeString = keyof TypeMap
+
 /**
  * A bunch of utility functions used throughout the library.
  * @namespace
@@ -46,11 +55,15 @@ export const utils = {
      * @param  {(boolean|string|number|object)} defaultValue A default value to fallback on if the type check fails.
      * @return {(boolean|string|number|object)}              The given value if type check passes, or the default value if it fails.
      */
-    ensureTypedArg: function (arg, type, defaultValue) {
+    ensureTypedArg: function <T extends TypeString>(
+        arg: unknown,
+        type: T,
+        defaultValue: TypeMap[T],
+    ): TypeMap[T] {
         "use strict"
 
         if (typeof arg === type) {
-            return arg
+            return arg as TypeMap[T]
         } else {
             return defaultValue
         }
@@ -68,7 +81,11 @@ export const utils = {
      * @param  {(boolean|string|number|object)} defaultValue A default fallback value.
      * @return {(boolean|string|number|object)}              The given value if type check passes, or the default value if it fails.
      */
-    ensureArrayTypedArg: function (arg, type, defaultValue) {
+    ensureArrayTypedArg: function <T extends TypeString>(
+        arg: unknown,
+        type: T,
+        defaultValue: TypeMap[T],
+    ): TypeMap[T][] | TypeMap[T] {
         "use strict"
 
         // If the argument being checked is an array, loop through
