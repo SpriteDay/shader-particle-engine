@@ -106,7 +106,7 @@ export class Group {
 
     _pool: Emitter[]
     _poolCreationSettings: EmitterOptions | null
-    _createNewWhenPoolEmpty: number
+    _createNewWhenPoolEmpty: boolean
 
     _attributesNeedRefresh: boolean
     _attributesNeedDynamicReset: boolean
@@ -250,7 +250,7 @@ export class Group {
         // Create properties for use by the emitter pooling functions.
         this._pool = []
         this._poolCreationSettings = null
-        this._createNewWhenPoolEmpty = 0
+        this._createNewWhenPoolEmpty = false
 
         // Whether all attributes should be forced to updated
         // their entire buffer contents on the next tick.
@@ -435,11 +435,11 @@ export class Group {
 
                 // // Add the attribute to the geometry if it doesn't already exist.
                 else {
-                    geometry.addAttribute(attr, attribute.bufferAttribute)
+                    geometry.addAttribute(attr, attribute.bufferAttribute!)
                 }
 
                 // Mark the attribute as needing an update the next time a frame is rendered.
-                attribute.bufferAttribute.needsUpdate = true
+                attribute.bufferAttribute!.needsUpdate = true
             }
         }
 
@@ -728,7 +728,7 @@ export class Group {
         var emitter
 
         // Save relevant settings and flags.
-        this._poolCreationSettings = emitterOptions
+        this._poolCreationSettings = emitterOptions as EmitterOptions
         this._createNewWhenPoolEmpty = !!createNew
 
         // Create the emitters, add them to this group and the pool.
@@ -751,7 +751,7 @@ export class Group {
         var emitter = this.getFromPool(),
             self = this
 
-        if (emitter === null) {
+        if (!emitter) {
             console.log("SPE.Group pool ran out.")
             return
         }
@@ -759,7 +759,7 @@ export class Group {
         // TODO:
         // - Make sure buffers are update with thus new position.
         if (pos instanceof THREE.Vector3) {
-            emitter.position.value.copy(pos)
+            emitter.position.value?.copy(pos)
 
             // Trigger the setter for this property to force an
             // update to the emitter's position attribute.
@@ -770,12 +770,16 @@ export class Group {
 
         setTimeout(
             function () {
+                if (!emitter) {
+                    console.error("Emitter is null")
+                    return
+                }
                 emitter.disable()
                 self.releaseIntoPool(emitter)
             },
             Math.max(
-                emitter.duration,
-                emitter.maxAge.value + emitter.maxAge.spread,
+                emitter.duration!,
+                emitter.maxAge.value! + emitter.maxAge.spread!,
             ) * 1000,
         )
 
@@ -836,7 +840,7 @@ export class Group {
             key = keys[i]
             emitterAttr = emitterRanges[key]
             attr = attrs[key]
-            attr.setUpdateRange(emitterAttr.min, emitterAttr.max)
+            attr.setUpdateRange(emitterAttr!.min, emitterAttr!.max)
             attr.flagUpdate()
         }
     }

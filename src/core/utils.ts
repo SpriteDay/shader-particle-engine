@@ -211,8 +211,8 @@ export const utils = {
      */
     ensureValueOverLifetimeCompliance: function (
         property: {
-            _value: unknown[]
-            _spread: unknown[]
+            _value?: unknown[]
+            _spread?: unknown[]
         },
         minLength: number,
         maxLength: number,
@@ -531,7 +531,7 @@ export const utils = {
         index: number,
         base: THREE.Vector3,
         spread: THREE.Vector3,
-        spreadClamp: THREE.Vector3,
+        spreadClamp?: THREE.Vector3,
     ) {
         "use strict"
 

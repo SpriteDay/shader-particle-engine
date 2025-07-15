@@ -326,6 +326,14 @@ export class Emitter {
     updateCounts: Record<string, number>
     updateMap: Record<string, string>
 
+    attributeKeys: (keyof Group["attributes"])[] | null
+    attributeCount: number
+    bufferUpdateRanges: {
+        [K in keyof Group["attributes"]]?: { min: number; max: number }
+    }
+
+    activationEnd?: number
+
     /**
      * The SPE.Emitter class.
      *
@@ -797,21 +805,25 @@ export class Emitter {
         //
         // Also, for now, make sure they have a length of 3 (min/max arguments here).
         utils.ensureValueOverLifetimeCompliance(
+            // @ts-expect-error - it was like that originally
             this.color,
             lifetimeLength,
             lifetimeLength,
         )
         utils.ensureValueOverLifetimeCompliance(
+            // @ts-expect-error - it was like that originally
             this.opacity,
             lifetimeLength,
             lifetimeLength,
         )
         utils.ensureValueOverLifetimeCompliance(
+            // @ts-expect-error - it was like that originally
             this.size,
             lifetimeLength,
             lifetimeLength,
         )
         utils.ensureValueOverLifetimeCompliance(
+            // @ts-expect-error - it was like that originally
             this.angle,
             lifetimeLength,
             lifetimeLength,
@@ -870,7 +882,7 @@ export class Emitter {
         }
     }
 
-    _setBufferUpdateRanges(keys) {
+    _setBufferUpdateRanges(keys: (keyof Group["attributes"])[]) {
         "use strict"
 
         this.attributeKeys = keys
@@ -884,7 +896,7 @@ export class Emitter {
         }
     }
 
-    _calculatePPSValue(groupMaxAge) {
+    _calculatePPSValue(groupMaxAge: number) {
         "use strict"
 
         var particleCount = this.particleCount
@@ -901,7 +913,7 @@ export class Emitter {
         }
     }
 
-    _setAttributeOffset(startIndex) {
+    _setAttributeOffset(startIndex: number) {
         this.attributeOffset = startIndex
         this.activationIndex = startIndex
         this.activationEnd = startIndex + this.particleCount
@@ -1010,10 +1022,14 @@ export class Emitter {
         }
     }
 
-    _assignForceValue(index, attrName) {
+    _assignForceValue(index: number, attrName: keyof typeof this.updateMap) {
         "use strict"
 
-        var prop = this[attrName],
+        var prop = this[attrName as keyof typeof this] as {
+                _value: THREE.Vector3
+                _spread: THREE.Vector3
+                _distribution: Distribution
+            },
             value = prop._value,
             spread = prop._spread,
             distribution = prop._distribution,
@@ -1026,7 +1042,7 @@ export class Emitter {
         switch (distribution) {
             case distributions.BOX:
                 utils.randomVector3(
-                    this.attributes[attrName],
+                    this.attributes![attrName as keyof typeof this.attributes],
                     index,
                     value,
                     spread,
@@ -1034,7 +1050,11 @@ export class Emitter {
                 break
 
             case distributions.SPHERE:
-                pos = this.attributes.position.typedArray.array
+                pos = this.attributes?.position.typedArray?.array
+                if (!pos) {
+                    console.error("No position attribute found")
+                    break
+                }
                 i = index * 3
 
                 // Ensure position values aren't zero, otherwise no force will be
@@ -1047,7 +1067,7 @@ export class Emitter {
                 positionZ = pos[i + 2]
 
                 utils.randomDirectionVector3OnSphere(
-                    this.attributes[attrName],
+                    this.attributes![attrName as keyof typeof this.attributes],
                     index,
                     positionX,
                     positionY,
@@ -1059,7 +1079,11 @@ export class Emitter {
                 break
 
             case distributions.DISC:
-                pos = this.attributes.position.typedArray.array
+                pos = this.attributes?.position.typedArray?.array
+                if (!pos) {
+                    console.error("No position attribute found")
+                    break
+                }
                 i = index * 3
 
                 // Ensure position values aren't zero, otherwise no force will be
@@ -1072,7 +1096,7 @@ export class Emitter {
                 positionZ = pos[i + 2]
 
                 utils.randomDirectionVector3OnDisc(
-                    this.attributes[attrName],
+                    this.attributes![attrName as keyof typeof this.attributes],
                     index,
                     positionX,
                     positionY,
@@ -1085,7 +1109,7 @@ export class Emitter {
 
             case distributions.LINE:
                 utils.randomVector3OnLine(
-                    this.attributes[attrName],
+                    this.attributes![attrName as keyof typeof this.attributes],
                     index,
                     value,
                     spread,
@@ -1099,7 +1123,8 @@ export class Emitter {
                 0,
                 1,
             )
-            this.attributes.acceleration.typedArray.array[index * 4 + 3] = drag
+            this.attributes!.acceleration.typedArray!.array[index * 4 + 3] =
+                drag
         }
     }
 
