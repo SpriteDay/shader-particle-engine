@@ -1,5 +1,6 @@
 import * as THREE from "three"
 import { TypedArrayHelper } from "./TypedArrayHelper"
+import { TypedArrayConstructor } from "../types"
 
 /**
  * A helper to handle creating and updating a THREE.BufferAttribute instance.
@@ -15,7 +16,11 @@ type ShaderAttributType = keyof typeof ShaderAttribute.typeSizeMap
 export class ShaderAttribute {
     type: ShaderAttributType
     componentSize: number
-    constructor(type: ShaderAttributType | null, dynamicBuffer, arrayType) {
+    constructor(
+        type: ShaderAttributType,
+        dynamicBuffer: boolean,
+        arrayType: TypedArrayConstructor,
+    ) {
         "use strict"
 
         const typeMap = ShaderAttribute.typeSizeMap

@@ -1,4 +1,5 @@
 import * as THREE from "three"
+import { TypedArray, TypedArrayConstructor } from "../types"
 
 /**
  * A helper class for TypedArrays.
@@ -15,19 +16,6 @@ import * as THREE from "three"
  * @param {Number} componentSize        The number of components per-value (ie. 3 for a vec3, 9 for a Mat3, etc.)
  * @param {Number} indexOffset          The index in the array from which to start assigning values. Default `0` if none provided
  */
-
-type TypedArrayConstructor =
-    | typeof Int8Array
-    | typeof Uint8Array
-    | typeof Uint8ClampedArray
-    | typeof Int16Array
-    | typeof Uint16Array
-    | typeof Int32Array
-    | typeof Uint32Array
-    | typeof Float32Array
-    | typeof Float64Array
-
-type TypedArray = InstanceType<TypedArrayConstructor>
 export class TypedArrayHelper {
     componentSize: number
     size: number
