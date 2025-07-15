@@ -10,7 +10,7 @@ import { utils } from "./utils"
 
 /**
  * A map of options to configure an SPE.Group instance.
- * @typedef {Object} GroupOptions
+ * {Object} GroupOptions
  *
  * @property {Object} texture An object describing the texture used by the group.
  *
@@ -61,7 +61,24 @@ import { utils } from "./utils"
  * @param {GroupOptions} options A map of options to configure the group instance.
  */
 
-type GroupOptions = {}
+type GroupOptions = {
+    texture: {
+        value: THREE.Texture
+        frames: THREE.Vector2
+        frameCount: number
+        loop: number
+    }
+    fixedTimeStep?: number
+    hasPerspective?: boolean
+    colorize?: boolean
+    blending: number
+    transparent?: boolean
+    alphaTest?: number
+    depthWrite?: boolean
+    depthTest?: boolean
+    fog?: boolean
+    scale: number
+}
 export class Group {
     constructor(options: GroupOptions) {
         "use strict"
