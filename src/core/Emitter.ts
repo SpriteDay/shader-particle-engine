@@ -2,7 +2,6 @@ import * as THREE from "three"
 import { utils } from "./utils"
 import { distributions, valueOverLifetimeLength } from "../constants"
 import { Distribution, WithGetters } from "../types"
-import { ShaderAttribute } from "../helpers/ShaderAttribute"
 import { Group } from "./Group"
 
 /**
@@ -908,7 +907,7 @@ export class Emitter {
         this.activationEnd = startIndex + this.particleCount
     }
 
-    _assignValue(prop, index) {
+    _assignValue(prop: keyof typeof this.updateMap, index: number) {
         "use strict"
 
         switch (prop) {
@@ -944,19 +943,21 @@ export class Emitter {
         }
     }
 
-    _assignPositionValue(index) {
+    _assignPositionValue(index: number) {
         "use strict"
 
-        var distributions = distributions,
-            utils = utils,
-            prop = this.position,
-            attr = this.attributes.position,
+        var prop = this.position,
+            attr = this.attributes?.position,
             value = prop._value,
             spread = prop._spread,
             distribution = prop._distribution
 
         switch (distribution) {
             case distributions.BOX:
+                if (!attr) {
+                    console.error("No position attribute found")
+                    return
+                }
                 utils.randomVector3(
                     attr,
                     index,
@@ -967,6 +968,10 @@ export class Emitter {
                 break
 
             case distributions.SPHERE:
+                if (!attr) {
+                    console.error("No position attribute found")
+                    return
+                }
                 utils.randomVector3OnSphere(
                     attr,
                     index,
@@ -980,6 +985,10 @@ export class Emitter {
                 break
 
             case distributions.DISC:
+                if (!attr) {
+                    console.error("No position attribute found")
+                    return
+                }
                 utils.randomVector3OnDisc(
                     attr,
                     index,
@@ -992,6 +1001,10 @@ export class Emitter {
                 break
 
             case distributions.LINE:
+                if (!attr) {
+                    console.error("No position attribute found")
+                    return
+                }
                 utils.randomVector3OnLine(attr, index, value, spread)
                 break
         }
@@ -1000,9 +1013,7 @@ export class Emitter {
     _assignForceValue(index, attrName) {
         "use strict"
 
-        var distributions = distributions,
-            utils = utils,
-            prop = this[attrName],
+        var prop = this[attrName],
             value = prop._value,
             spread = prop._spread,
             distribution = prop._distribution,
