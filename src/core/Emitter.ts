@@ -634,7 +634,7 @@ export class Emitter {
         )
     }
 
-    _createGetterSetters = function (propObj, propName) {
+    _createGetterSetters(propObj, propName) {
         "use strict"
 
         var self = this
@@ -686,7 +686,7 @@ export class Emitter {
         }
     }
 
-    _setBufferUpdateRanges = function (keys) {
+    _setBufferUpdateRanges(keys) {
         "use strict"
 
         this.attributeKeys = keys
@@ -700,7 +700,7 @@ export class Emitter {
         }
     }
 
-    _calculatePPSValue = function (groupMaxAge) {
+    _calculatePPSValue(groupMaxAge) {
         "use strict"
 
         var particleCount = this.particleCount
@@ -717,13 +717,13 @@ export class Emitter {
         }
     }
 
-    _setAttributeOffset = function (startIndex) {
+    _setAttributeOffset(startIndex) {
         this.attributeOffset = startIndex
         this.activationIndex = startIndex
         this.activationEnd = startIndex + this.particleCount
     }
 
-    _assignValue = function (prop, index) {
+    _assignValue(prop, index) {
         "use strict"
 
         switch (prop) {
@@ -759,7 +759,7 @@ export class Emitter {
         }
     }
 
-    _assignPositionValue = function (index) {
+    _assignPositionValue(index) {
         "use strict"
 
         var distributions = SPE.distributions,
@@ -812,7 +812,7 @@ export class Emitter {
         }
     }
 
-    _assignForceValue = function (index, attrName) {
+    _assignForceValue(index, attrName) {
         "use strict"
 
         var distributions = SPE.distributions,
@@ -907,7 +907,7 @@ export class Emitter {
         }
     }
 
-    _assignAbsLifetimeValue = function (index, propName) {
+    _assignAbsLifetimeValue(index, propName) {
         "use strict"
 
         var array = this.attributes[propName].typedArray,
@@ -932,7 +932,7 @@ export class Emitter {
         }
     }
 
-    _assignAngleValue = function (index) {
+    _assignAngleValue(index) {
         "use strict"
 
         var array = this.attributes.angle.typedArray,
@@ -957,7 +957,7 @@ export class Emitter {
         }
     }
 
-    _assignParamsValue = function (index) {
+    _assignParamsValue(index) {
         "use strict"
 
         this.attributes.params.typedArray.setVec4Components(
@@ -971,7 +971,7 @@ export class Emitter {
         )
     }
 
-    _assignRotationValue = function (index) {
+    _assignRotationValue(index) {
         "use strict"
 
         this.attributes.rotation.typedArray.setVec3Components(
@@ -993,7 +993,7 @@ export class Emitter {
         )
     }
 
-    _assignColorValue = function (index) {
+    _assignColorValue(index) {
         "use strict"
         SPE.utils.randomColorAsHex(
             this.attributes.color,
@@ -1003,7 +1003,7 @@ export class Emitter {
         )
     }
 
-    _resetParticle = function (index) {
+    _resetParticle(index) {
         "use strict"
 
         var resetFlags = this.resetFlags,
@@ -1034,7 +1034,7 @@ export class Emitter {
         }
     }
 
-    _updateAttributeUpdateRange = function (attr, i) {
+    _updateAttributeUpdateRange(attr, i) {
         "use strict"
 
         var ranges = this.bufferUpdateRanges[attr]
@@ -1043,7 +1043,7 @@ export class Emitter {
         ranges.max = Math.max(i, ranges.max)
     }
 
-    _resetBufferRanges = function () {
+    _resetBufferRanges() {
         "use strict"
 
         var ranges = this.bufferUpdateRanges,
@@ -1058,7 +1058,7 @@ export class Emitter {
         }
     }
 
-    _onRemove = function () {
+    _onRemove() {
         "use strict"
         // Reset any properties of the emitter that were set by
         // a group when it was added.
@@ -1072,7 +1072,7 @@ export class Emitter {
         this.age = 0.0
     }
 
-    _decrementParticleCount = function () {
+    _decrementParticleCount() {
         "use strict"
         --this.activeParticleCount
 
@@ -1080,7 +1080,7 @@ export class Emitter {
         //  - Trigger event if count === 0.
     }
 
-    _incrementParticleCount = function () {
+    _incrementParticleCount() {
         "use strict"
         ++this.activeParticleCount
 
@@ -1088,7 +1088,7 @@ export class Emitter {
         //  - Trigger event if count === this.particleCount.
     }
 
-    _checkParticleAges = function (start, end, params, dt) {
+    _checkParticleAges(start, end, params, dt) {
         "use strict"
         for (var i = end - 1, index, maxAge, age, alive; i >= start; --i) {
             index = i * 4
@@ -1128,12 +1128,7 @@ export class Emitter {
         }
     }
 
-    _activateParticles = function (
-        activationStart,
-        activationEnd,
-        params,
-        dtPerParticle,
-    ) {
+    _activateParticles(activationStart, activationEnd, params, dtPerParticle) {
         "use strict"
         var direction = this.direction
 
@@ -1181,7 +1176,7 @@ export class Emitter {
      *
      * @param  {Number} dt The number of seconds to simulate (deltaTime)
      */
-    tick = function (dt) {
+    tick(dt) {
         "use strict"
 
         if (this.isStatic) {
@@ -1257,7 +1252,7 @@ export class Emitter {
      * @param  {Boolean} [force=undefined] If true, all particles will be marked as dead instantly.
      * @return {Emitter}       This emitter instance.
      */
-    reset = function (force) {
+    reset(force) {
         "use strict"
 
         this.age = 0.0
@@ -1290,7 +1285,7 @@ export class Emitter {
      *
      * @return {Emitter} This emitter instance.
      */
-    enable = function () {
+    enable() {
         "use strict"
         this.alive = true
         return this
@@ -1304,7 +1299,7 @@ export class Emitter {
      *
      * @return {Emitter} This emitter instance.
      */
-    disable = function () {
+    disable() {
         "use strict"
 
         this.alive = false
@@ -1322,7 +1317,7 @@ export class Emitter {
      *
      * @see SPE.Group.prototype.removeEmitter
      */
-    remove = function () {
+    remove() {
         "use strict"
         if (this.group !== null) {
             this.group.removeEmitter(this)

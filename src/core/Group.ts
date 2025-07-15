@@ -274,7 +274,7 @@ export class Group {
         }
     }
 
-    _updateDefines = function () {
+    _updateDefines() {
         "use strict"
 
         var emitters = this.emitters,
@@ -309,7 +309,7 @@ export class Group {
         this.material.needsUpdate = true
     }
 
-    _applyAttributesToGeometry = function () {
+    _applyAttributesToGeometry() {
         "use strict"
 
         var attributes = this.attributes,
@@ -357,7 +357,7 @@ export class Group {
      *
      * @param {Emitter} emitter The emitter to add to this group.
      */
-    addEmitter = function (emitter) {
+    addEmitter(emitter) {
         "use strict"
 
         // Ensure an actual emitter instance is passed here.
@@ -485,7 +485,7 @@ export class Group {
      *
      * @param {Emitter} emitter The emitter to add to this group.
      */
-    removeEmitter = function (emitter) {
+    removeEmitter(emitter) {
         "use strict"
 
         var emitterIndex = this.emitterIDs.indexOf(emitter.uuid)
@@ -554,7 +554,7 @@ export class Group {
      *
      * @return {Emitter|null}
      */
-    getFromPool = function () {
+    getFromPool() {
         "use strict"
 
         var pool = this._pool,
@@ -579,7 +579,7 @@ export class Group {
      * @param  {ShaderParticleEmitter} emitter
      * @return {Group} This group instance.
      */
-    releaseIntoPool = function (emitter) {
+    releaseIntoPool(emitter) {
         "use strict"
 
         if (emitter instanceof SPE.Emitter === false) {
@@ -598,7 +598,7 @@ export class Group {
      *
      * @return {Array}
      */
-    getPool = function () {
+    getPool() {
         "use strict"
         return this._pool
     }
@@ -611,7 +611,7 @@ export class Group {
      * @param {Boolean} createNew       Should a new emitter be created if the pool runs out?
      * @return {Group} This group instance.
      */
-    addPool = function (numEmitters, emitterOptions, createNew) {
+    addPool(numEmitters, emitterOptions, createNew) {
         "use strict"
 
         var emitter
@@ -634,7 +634,7 @@ export class Group {
         return this
     }
 
-    _triggerSingleEmitter = function (pos) {
+    _triggerSingleEmitter(pos) {
         "use strict"
 
         var emitter = this.getFromPool(),
@@ -679,7 +679,7 @@ export class Group {
      * @param  {Object} [position=undefined] A THREE.Vector3 instance describing the position to activate the emitter(s) at.
      * @return {Group} This group instance.
      */
-    triggerPoolEmitter = function (numEmitters, position) {
+    triggerPoolEmitter(numEmitters, position) {
         "use strict"
 
         if (typeof numEmitters === "number" && numEmitters > 1) {
@@ -693,14 +693,14 @@ export class Group {
         return this
     }
 
-    _updateUniforms = function (dt) {
+    _updateUniforms(dt) {
         "use strict"
 
         this.uniforms.runTime.value += dt
         this.uniforms.deltaTime.value = dt
     }
 
-    _resetBufferRanges = function () {
+    _resetBufferRanges() {
         "use strict"
 
         var keys = this.attributeKeys,
@@ -712,7 +712,7 @@ export class Group {
         }
     }
 
-    _updateBuffers = function (emitter) {
+    _updateBuffers(emitter) {
         "use strict"
 
         var keys = this.attributeKeys,
@@ -737,7 +737,7 @@ export class Group {
      * attribute values along the way.
      * @param  {Number} [dt=Group's `fixedTimeStep` value] The number of seconds to simulate the group's emitters for (deltaTime)
      */
-    tick = function (dt) {
+    tick(dt) {
         "use strict"
 
         var emitters = this.emitters,
@@ -805,7 +805,7 @@ export class Group {
      *
      * @return {Group} Group instance.
      */
-    dispose = function () {
+    dispose() {
         "use strict"
         this.geometry.dispose()
         this.material.dispose()

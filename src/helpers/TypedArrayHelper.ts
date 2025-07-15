@@ -94,7 +94,7 @@ export class TypedArrayHelper {
      * @param  {Number} end The end index of the splice. Will be multiplied by the number of components for this attribute.
      * @returns {Object} The SPE.TypedArrayHelper instance.
      */
-    splice = function (start, end) {
+    splice(start, end) {
         "use strict"
         start *= this.componentSize
         end *= this.componentSize
@@ -124,7 +124,7 @@ export class TypedArrayHelper {
      * @param {TypedArray} array The array from which to copy; the source array.
      * @return {SPE.TypedArrayHelper} Instance of this class.
      */
-    setFromArray = function (index, array) {
+    setFromArray(index, array) {
         "use strict"
 
         var sourceArraySize = array.length,
@@ -148,7 +148,7 @@ export class TypedArrayHelper {
      * @param {Vector2} vec2  Any object that has `x` and `y` properties.
      * @return {SPE.TypedArrayHelper} Instance of this class.
      */
-    setVec2 = function (index, vec2) {
+    setVec2(index, vec2) {
         "use strict"
 
         return this.setVec2Components(index, vec2.x, vec2.y)
@@ -162,7 +162,7 @@ export class TypedArrayHelper {
      * @param {Number} y     The Vec2's `y` component.
      * @return {SPE.TypedArrayHelper} Instance of this class.
      */
-    setVec2Components = function (index, x, y) {
+    setVec2Components(index, x, y) {
         "use strict"
 
         var array = this.array,
@@ -180,7 +180,7 @@ export class TypedArrayHelper {
      * @param {Vector3} vec2  Any object that has `x`, `y`, and `z` properties.
      * @return {SPE.TypedArrayHelper} Instance of this class.
      */
-    setVec3 = function (index, vec3) {
+    setVec3(index, vec3) {
         "use strict"
 
         return this.setVec3Components(index, vec3.x, vec3.y, vec3.z)
@@ -195,7 +195,7 @@ export class TypedArrayHelper {
      * @param {Number} z     The Vec3's `z` component.
      * @return {SPE.TypedArrayHelper} Instance of this class.
      */
-    setVec3Components = function (index, x, y, z) {
+    setVec3Components(index, x, y, z) {
         "use strict"
 
         var array = this.array,
@@ -214,7 +214,7 @@ export class TypedArrayHelper {
      * @param {Vector4} vec2  Any object that has `x`, `y`, `z`, and `w` properties.
      * @return {SPE.TypedArrayHelper} Instance of this class.
      */
-    setVec4 = function (index, vec4) {
+    setVec4(index, vec4) {
         "use strict"
 
         return this.setVec4Components(index, vec4.x, vec4.y, vec4.z, vec4.w)
@@ -230,7 +230,7 @@ export class TypedArrayHelper {
      * @param {Number} w     The Vec4's `w` component.
      * @return {SPE.TypedArrayHelper} Instance of this class.
      */
-    setVec4Components = function (index, x, y, z, w) {
+    setVec4Components(index, x, y, z, w) {
         "use strict"
 
         var array = this.array,
@@ -250,7 +250,7 @@ export class TypedArrayHelper {
      * @param {Matrix3} mat3 The 3x3 matrix to set from. Must have a TypedArray property named `elements` to copy from.
      * @return {SPE.TypedArrayHelper} Instance of this class.
      */
-    setMat3 = function (index, mat3) {
+    setMat3(index, mat3) {
         "use strict"
 
         return this.setFromArray(
@@ -266,7 +266,7 @@ export class TypedArrayHelper {
      * @param {Matrix4} mat3 The 4x4 matrix to set from. Must have a TypedArray property named `elements` to copy from.
      * @return {SPE.TypedArrayHelper} Instance of this class.
      */
-    setMat4 = function (index, mat4) {
+    setMat4(index, mat4) {
         "use strict"
 
         return this.setFromArray(
@@ -282,7 +282,7 @@ export class TypedArrayHelper {
      * @param {Color} color  Any object that has `r`, `g`, and `b` properties.
      * @return {SPE.TypedArrayHelper} Instance of this class.
      */
-    setColor = function (index, color) {
+    setColor(index, color) {
         "use strict"
 
         return this.setVec3Components(index, color.r, color.g, color.b)
@@ -295,7 +295,7 @@ export class TypedArrayHelper {
      * @param {Number} numericValue  The number to assign to this index in the array.
      * @return {SPE.TypedArrayHelper} Instance of this class.
      */
-    setNumber = function (index, numericValue) {
+    setNumber(index, numericValue) {
         "use strict"
 
         this.array[this.indexOffset + index * this.componentSize] = numericValue
@@ -312,7 +312,7 @@ export class TypedArrayHelper {
      * @param  {Number} index The index in the array to fetch.
      * @return {Number}       The value at the given index.
      */
-    getValueAtIndex = function (index) {
+    getValueAtIndex(index) {
         "use strict"
 
         return this.array[this.indexOffset + index]
@@ -328,7 +328,7 @@ export class TypedArrayHelper {
      * @param  {Number} index The index in the array to fetch.
      * @return {TypedArray}       The component value at the given index.
      */
-    getComponentValueAtIndex = function (index) {
+    getComponentValueAtIndex(index) {
         "use strict"
 
         return this.array.subarray(
