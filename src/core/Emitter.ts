@@ -148,7 +148,7 @@ import { Group } from "./Group"
  *
  */
 
-type EmitterOptions = {
+export type EmitterOptions = {
     type?: Distribution
     distribution?: Distribution
     particleCount?: number
@@ -1445,7 +1445,7 @@ export class Emitter {
      * @param  {Boolean} [force=undefined] If true, all particles will be marked as dead instantly.
      * @return {Emitter}       This emitter instance.
      */
-    reset(force) {
+    reset(force?: boolean) {
         "use strict"
 
         this.age = 0.0

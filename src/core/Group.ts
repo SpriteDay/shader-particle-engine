@@ -7,7 +7,7 @@
 import * as THREE from "three"
 import { ShaderAttribute } from "../helpers/ShaderAttribute"
 import { utils } from "./utils"
-import { Emitter } from "./Emitter"
+import { Emitter, EmitterOptions } from "./Emitter"
 import { valueOverLifetimeLength } from "../constants"
 import { shaders } from "../shaders/shaders"
 import { Uniforms } from "../types"
@@ -65,7 +65,7 @@ import { Uniforms } from "../types"
  * @param {GroupOptions} options A map of options to configure the group instance.
  */
 
-type GroupOptions = {
+export type GroupOptions = {
     texture?: {
         value?: THREE.Texture
         frames?: THREE.Vector2
@@ -104,8 +104,8 @@ export class Group {
     emitters: Emitter[]
     emitterIDs: string[]
 
-    _pool: unknown[]
-    _poolCreationSettings: null
+    _pool: Emitter[]
+    _poolCreationSettings: EmitterOptions | null
     _createNewWhenPoolEmpty: number
 
     _attributesNeedRefresh: boolean
@@ -386,18 +386,21 @@ export class Group {
                 defines.SHOULD_ROTATE_TEXTURE =
                     defines.SHOULD_ROTATE_TEXTURE ||
                     !!Math.max(
-                        Math.max.apply(null, emitter.angle.value),
-                        Math.max.apply(null, emitter.angle.spread),
+                        Math.max.apply(null, emitter.angle.value as number[]),
+                        Math.max.apply(null, emitter.angle.spread as number[]),
                     )
             }
 
             defines.SHOULD_ROTATE_PARTICLES =
                 defines.SHOULD_ROTATE_PARTICLES ||
-                !!Math.max(emitter.rotation.angle, emitter.rotation.angleSpread)
+                !!Math.max(
+                    emitter.rotation.angle!,
+                    emitter.rotation.angleSpread!,
+                )
 
             defines.SHOULD_WIGGLE_PARTICLES =
                 defines.SHOULD_WIGGLE_PARTICLES ||
-                !!Math.max(emitter.wiggle.value, emitter.wiggle.spread)
+                !!Math.max(emitter.wiggle.value!, emitter.wiggle.spread!)
         }
 
         this.material.needsUpdate = true
@@ -416,7 +419,8 @@ export class Group {
         // typed array buffers to each one.
         for (var attr in attributes) {
             if (attributes.hasOwnProperty(attr)) {
-                attribute = attributes[attr]
+                const key = attr as keyof typeof attributes
+                attribute = attributes[key]
                 geometryAttribute = geometryAttributes[attr]
 
                 // Update the array if this attribute exists on the geometry.
@@ -425,6 +429,7 @@ export class Group {
                 // been resized and reinstantiated, and might now be looking at a
                 // different ArrayBuffer, so reference needs updating.
                 if (geometryAttribute) {
+                    // @ts-expect-error - it was like that originally
                     geometryAttribute.array = attribute.typedArray.array
                 }
 
@@ -451,7 +456,7 @@ export class Group {
      *
      * @param {Emitter} emitter The emitter to add to this group.
      */
-    addEmitter(emitter) {
+    addEmitter(emitter: Emitter) {
         "use strict"
 
         // Ensure an actual emitter instance is passed here.
@@ -459,7 +464,7 @@ export class Group {
         // Decided not to throw here, just in case a scene's
         // rendering would be paused. Logging an error instead
         // of stopping execution if exceptions aren't caught.
-        if (emitter instanceof SPE.Emitter === false) {
+        if (emitter instanceof Emitter === false) {
             console.error(
                 "`emitter` argument must be instance of SPE.Emitter. Was provided with:",
                 emitter,
@@ -528,9 +533,10 @@ export class Group {
         // TypedArrays are of the correct size.
         for (var attr in attributes) {
             if (attributes.hasOwnProperty(attr)) {
+                const key = attr as keyof typeof attributes
                 // When creating a buffer, pass through the maxParticle count
                 // if one is specified.
-                attributes[attr]._createBufferAttribute(
+                attributes[key]._createBufferAttribute(
                     this.maxParticleCount !== null
                         ? this.maxParticleCount
                         : this.particleCount,
@@ -561,10 +567,12 @@ export class Group {
         this.emitterIDs.push(emitter.uuid)
 
         // Update certain flags to enable shader calculations only if they're necessary.
+        // @ts-expect-error - it was like that originally
         this._updateDefines(emitter)
 
         // Update the material since defines might have changed
         this.material.needsUpdate = true
+        // @ts-expect-error - it was like that originally
         this.geometry.needsUpdate = true
         this._attributesNeedRefresh = true
 
@@ -613,8 +621,10 @@ export class Group {
 
         // Set alive and age to zero.
         for (var i = start; i < end; ++i) {
-            params.array[i * 4] = 0.0
-            params.array[i * 4 + 1] = 0.0
+            if (params) {
+                params.array[i * 4] = 0.0
+                params.array[i * 4 + 1] = 0.0
+            }
         }
 
         // Remove the emitter from this group's "store".
@@ -626,7 +636,8 @@ export class Group {
         // as needing to update it's entire contents.
         for (var attr in this.attributes) {
             if (this.attributes.hasOwnProperty(attr)) {
-                this.attributes[attr].splice(start, end)
+                const key = attr as keyof typeof this.attributes
+                this.attributes[key].splice(start, end)
             }
         }
 
@@ -648,7 +659,7 @@ export class Group {
      *
      * @return {Emitter|null}
      */
-    getFromPool() {
+    getFromPool(): Emitter | null | undefined {
         "use strict"
 
         var pool = this._pool,
@@ -657,7 +668,9 @@ export class Group {
         if (pool.length) {
             return pool.pop()
         } else if (createNew) {
-            var emitter = new Emitter(this._poolCreationSettings)
+            var emitter = new Emitter(
+                this._poolCreationSettings as EmitterOptions,
+            )
 
             this.addEmitter(emitter)
 
@@ -705,7 +718,11 @@ export class Group {
      * @param {Boolean} createNew       Should a new emitter be created if the pool runs out?
      * @return {Group} This group instance.
      */
-    addPool(numEmitters, emitterOptions, createNew) {
+    addPool(
+        numEmitters: number,
+        emitterOptions: EmitterOptions | EmitterOptions[],
+        createNew: boolean,
+    ) {
         "use strict"
 
         var emitter
@@ -728,7 +745,7 @@ export class Group {
         return this
     }
 
-    _triggerSingleEmitter(pos) {
+    _triggerSingleEmitter(pos: THREE.Vector3) {
         "use strict"
 
         var emitter = this.getFromPool(),
@@ -773,7 +790,7 @@ export class Group {
      * @param  {Object} [position=undefined] A THREE.Vector3 instance describing the position to activate the emitter(s) at.
      * @return {Group} This group instance.
      */
-    triggerPoolEmitter(numEmitters, position) {
+    triggerPoolEmitter(numEmitters: number, position: THREE.Vector3) {
         "use strict"
 
         if (typeof numEmitters === "number" && numEmitters > 1) {
@@ -787,10 +804,8 @@ export class Group {
         return this
     }
 
-    _updateUniforms(dt) {
-        "use strict"
-
-        this.uniforms.runTime.value += dt
+    _updateUniforms(dt: number) {
+        ;(this.uniforms.runTime.value as number) += dt
         this.uniforms.deltaTime.value = dt
     }
 
@@ -806,7 +821,7 @@ export class Group {
         }
     }
 
-    _updateBuffers(emitter) {
+    _updateBuffers(emitter: Emitter) {
         "use strict"
 
         var keys = this.attributeKeys,
@@ -831,7 +846,7 @@ export class Group {
      * attribute values along the way.
      * @param  {Number} [dt=Group's `fixedTimeStep` value] The number of seconds to simulate the group's emitters for (deltaTime)
      */
-    tick(dt) {
+    tick(dt: number) {
         "use strict"
 
         var emitters = this.emitters,
@@ -859,7 +874,7 @@ export class Group {
         // Loop through each emitter in this group and
         // simulate it, then update the shader attribute
         // buffers.
-        for (var i = 0, emitter; i < numEmitters; ++i) {
+        for (let i = 0, emitter; i < numEmitters; ++i) {
             emitter = emitters[i]
             emitter.tick(deltaTime)
             this._updateBuffers(emitter)
