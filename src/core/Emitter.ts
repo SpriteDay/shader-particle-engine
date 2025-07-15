@@ -2,6 +2,8 @@ import * as THREE from "three"
 import { utils } from "./utils"
 import { distributions, valueOverLifetimeLength } from "../constants"
 import { Distribution } from "../types"
+import { ShaderAttribute } from "../helpers/ShaderAttribute"
+import { Group } from "./Group"
 
 /**
  * An SPE.Emitter instance.
@@ -148,77 +150,165 @@ import { Distribution } from "../types"
  */
 
 type EmitterOptions = {
-    distribution: Distribution
+    type?: Distribution
+    distribution?: Distribution
+    particleCount?: number
+    duration?: number | null
+    isStatic?: boolean
+    activeMultiplier?: number
+    direction?: number
+    maxAge?: {
+        value?: number
+        spread?: number
+    }
+    position?: {
+        value?: THREE.Vector3
+        spread?: THREE.Vector3
+        spreadClamp?: THREE.Vector3
+        radius?: number
+        radiusScale?: THREE.Vector3
+        distribution?: Distribution
+        distributionClamp?: number
+        randomise?: boolean
+    }
+    velocity?: {
+        value?: THREE.Vector3
+        spread?: THREE.Vector3
+        distribution?: Distribution
+        randomise?: boolean
+    }
+    acceleration?: {
+        value?: THREE.Vector3
+        spread?: THREE.Vector3
+        distribution?: Distribution
+        randomise?: boolean
+    }
+    radius?: {
+        value?: number
+        spread?: number
+    }
+    drag?: {
+        value?: number
+        spread?: number
+        randomise?: boolean
+    }
+    wiggle?: {
+        value?: number
+        spread?: number
+    }
+    rotation?: {
+        axis?: THREE.Vector3
+        axisSpread?: THREE.Vector3
+        angle?: number
+        angleSpread?: number
+        static?: boolean
+        center?: THREE.Vector3
+        randomise?: boolean
+    }
+    color?: {
+        value?: THREE.Color | THREE.Color[]
+        spread?: THREE.Vector3 | THREE.Vector3[]
+        randomise?: boolean
+    }
+    opacity?: {
+        value?: number | number[]
+        spread?: number | number[]
+        randomise?: boolean
+    }
+    size?: {
+        value?: number | number[]
+        spread?: number | number[]
+        randomise?: boolean
+    }
+    angle?: {
+        value?: number | number[]
+        spread?: number | number[]
+        randomise?: boolean
+    }
+    alive?: boolean
+}
+export class Emitter {
+    uuid: string
+    type: Distribution
+    position: {
+        _value: THREE.Vector3
+        _spread: THREE.Vector3
+        _spreadClamp: THREE.Vector3
+        _distribution: Distribution
+        _randomise: boolean
+        _radius: number
+        _radiusScale: THREE.Vector3
+        _distributionClamp: number
+    }
+    velocity: {
+        _value: THREE.Vector3
+        _spread: THREE.Vector3
+        _distribution: Distribution
+        _randomise: boolean
+    }
+    acceleration: {
+        _value: THREE.Vector3
+        _spread: THREE.Vector3
+        _distribution: Distribution
+        _randomise: boolean
+    }
+    drag: {
+        _value: number
+        _spread: number
+        _randomise: boolean
+    }
+    wiggle: {
+        _value: number
+        _spread: number
+    }
+    rotation: {
+        _axis: THREE.Vector3
+        _axisSpread: THREE.Vector3
+        _angle: number
+        _angleSpread: number
+        _static: boolean
+        _center: THREE.Vector3
+        _randomise: boolean
+    }
+    maxAge: {
+        _value: number
+        _spread: number
+    }
+    color: {
+        _value: THREE.Color | THREE.Color[]
+        _spread: THREE.Vector3 | THREE.Vector3[]
+        _randomise: boolean
+    }
+    opacity: {
+        _value: number | number[]
+        _spread: number | number[]
+        _randomise: boolean
+    }
+    size: {
+        _value: number | number[]
+        _spread: number | number[]
+        _randomise: boolean
+    }
+    angle: {
+        _value: number | number[]
+        _spread: number | number[]
+        _randomise: boolean
+    }
     particleCount: number
     duration: number | null
     isStatic: boolean
     activeMultiplier: number
     direction: number
-    maxAge: {
-        value: number
-        spread: number
-    }
-    position: {
-        value: THREE.Vector3
-        spread: THREE.Vector3
-        spreadClamp: THREE.Vector3
-        radius: number
-        radiusScale: THREE.Vector3
-        distribution: Distribution
-        randomise?: boolean
-    }
-    velocity: {
-        value: THREE.Vector3
-        spread: THREE.Vector3
-        distribution: Distribution
-        randomise?: boolean
-    }
-    acceleration: {
-        value: THREE.Vector3
-        spread: THREE.Vector3
-        distribution: Distribution
-        randomise?: boolean
-    }
-    drag: {
-        value: number
-        spread: number
-        randomise?: boolean
-    }
-    wiggle: {
-        value: number
-        spread: number
-    }
-    rotation: {
-        axis: THREE.Vector3
-        axisSpread: THREE.Vector3
-        angle: number
-        angleSpread: number
-        static: boolean
-        center: THREE.Vector3
-        randomise?: boolean
-    }
-    color: {
-        value: THREE.Color | THREE.Color[]
-        spread: THREE.Vector3 | THREE.Vector3[]
-        randomise?: boolean
-    }
-    opacity: {
-        value: number | number[]
-        spread: number | number[]
-        randomise?: boolean
-    }
-    size: {
-        value: number | number[]
-        spread: number | number[]
-        randomise?: boolean
-    }
-    angle: {
-        value: number | number[]
-        spread: number | number[]
-        randomise?: boolean
-    }
-}
-export class Emitter {
+    alive: boolean
+    particlesPerSecond: number
+    activationIndex: number
+    attributeOffset: number
+    attributeEnd: number
+    age: number
+    activeParticleCount: number
+    group: Group | null
+    attributes: Group["attributes"] | null
+
     /**
      * The SPE.Emitter class.
      *
@@ -226,7 +316,7 @@ export class Emitter {
      *
      * @param {EmitterOptions} options A map of options to configure the emitter.
      */
-    constructor(options: EmitterOptions) {
+    constructor(options?: EmitterOptions) {
         "use strict"
 
         var types = utils.types,
@@ -234,22 +324,26 @@ export class Emitter {
 
         // Ensure we have a map of options to play with,
         // and that each option is in the correct format.
-        options = utils.ensureTypedArg(options, types.OBJECT, {})
+        options = utils.ensureTypedArg(
+            options,
+            types.OBJECT,
+            {},
+        ) as EmitterOptions
         options.position = utils.ensureTypedArg(
             options.position,
             types.OBJECT,
             {},
-        )
+        ) as EmitterOptions["position"]
         options.velocity = utils.ensureTypedArg(
             options.velocity,
             types.OBJECT,
             {},
-        )
+        ) as EmitterOptions["velocity"]
         options.acceleration = utils.ensureTypedArg(
             options.acceleration,
             types.OBJECT,
             {},
-        )
+        ) as EmitterOptions["acceleration"]
         options.radius = utils.ensureTypedArg(options.radius, types.OBJECT, {})
         options.drag = utils.ensureTypedArg(options.drag, types.OBJECT, {})
         options.rotation = utils.ensureTypedArg(
@@ -268,7 +362,7 @@ export class Emitter {
         options.wiggle = utils.ensureTypedArg(options.wiggle, types.OBJECT, {})
         options.maxAge = utils.ensureTypedArg(options.maxAge, types.OBJECT, {})
 
-        if (options.onParticleSpawn) {
+        if ((options as any).onParticleSpawn) {
             console.warn(
                 "onParticleSpawn has been removed. Please set properties directly to alter values at runtime.",
             )
@@ -288,42 +382,42 @@ export class Emitter {
         // Btw, values over lifetimes are just the new way of referring to *Start, *Middle, and *End.
         this.position = {
             _value: utils.ensureInstanceOf(
-                options.position.value,
+                options.position?.value,
                 THREE.Vector3,
                 new THREE.Vector3(),
             ),
             _spread: utils.ensureInstanceOf(
-                options.position.spread,
+                options.position?.spread,
                 THREE.Vector3,
                 new THREE.Vector3(),
             ),
             _spreadClamp: utils.ensureInstanceOf(
-                options.position.spreadClamp,
+                options.position?.spreadClamp,
                 THREE.Vector3,
                 new THREE.Vector3(),
             ),
             _distribution: utils.ensureTypedArg(
-                options.position.distribution,
+                options.position?.distribution,
                 types.NUMBER,
                 this.type,
             ),
             _randomise: utils.ensureTypedArg(
-                options.position.randomise,
+                options.position?.randomise,
                 types.BOOLEAN,
                 false,
             ),
             _radius: utils.ensureTypedArg(
-                options.position.radius,
+                options.position?.radius,
                 types.NUMBER,
                 10,
             ),
             _radiusScale: utils.ensureInstanceOf(
-                options.position.radiusScale,
+                options.position?.radiusScale,
                 THREE.Vector3,
                 new THREE.Vector3(1, 1, 1),
             ),
             _distributionClamp: utils.ensureTypedArg(
-                options.position.distributionClamp,
+                options.position?.distributionClamp,
                 types.NUMBER,
                 0,
             ),
@@ -331,22 +425,22 @@ export class Emitter {
 
         this.velocity = {
             _value: utils.ensureInstanceOf(
-                options.velocity.value,
+                options.velocity?.value,
                 THREE.Vector3,
                 new THREE.Vector3(),
             ),
             _spread: utils.ensureInstanceOf(
-                options.velocity.spread,
+                options.velocity?.spread,
                 THREE.Vector3,
                 new THREE.Vector3(),
             ),
             _distribution: utils.ensureTypedArg(
-                options.velocity.distribution,
+                options.velocity?.distribution,
                 types.NUMBER,
                 this.type,
             ),
             _randomise: utils.ensureTypedArg(
-                options.position.randomise,
+                options.position?.randomise,
                 types.BOOLEAN,
                 false,
             ),
@@ -354,22 +448,22 @@ export class Emitter {
 
         this.acceleration = {
             _value: utils.ensureInstanceOf(
-                options.acceleration.value,
+                options.acceleration?.value,
                 THREE.Vector3,
                 new THREE.Vector3(),
             ),
             _spread: utils.ensureInstanceOf(
-                options.acceleration.spread,
+                options.acceleration?.spread,
                 THREE.Vector3,
                 new THREE.Vector3(),
             ),
             _distribution: utils.ensureTypedArg(
-                options.acceleration.distribution,
+                options.acceleration?.distribution,
                 types.NUMBER,
                 this.type,
             ),
             _randomise: utils.ensureTypedArg(
-                options.position.randomise,
+                options.position?.randomise,
                 types.BOOLEAN,
                 false,
             ),
@@ -379,7 +473,7 @@ export class Emitter {
             _value: utils.ensureTypedArg(options.drag.value, types.NUMBER, 0),
             _spread: utils.ensureTypedArg(options.drag.spread, types.NUMBER, 0),
             _randomise: utils.ensureTypedArg(
-                options.position.randomise,
+                options.position?.randomise,
                 types.BOOLEAN,
                 false,
             ),
@@ -426,7 +520,7 @@ export class Emitter {
                 this.position._value.clone(),
             ),
             _randomise: utils.ensureTypedArg(
-                options.position.randomise,
+                options.position?.randomise,
                 types.BOOLEAN,
                 false,
             ),
@@ -455,7 +549,7 @@ export class Emitter {
                 new THREE.Vector3(),
             ),
             _randomise: utils.ensureTypedArg(
-                options.position.randomise,
+                options.position?.randomise,
                 types.BOOLEAN,
                 false,
             ),
@@ -491,7 +585,7 @@ export class Emitter {
                 0,
             ),
             _randomise: utils.ensureTypedArg(
-                options.position.randomise,
+                options.position?.randomise,
                 types.BOOLEAN,
                 false,
             ),
@@ -509,7 +603,7 @@ export class Emitter {
                 0,
             ),
             _randomise: utils.ensureTypedArg(
-                options.position.randomise,
+                options.position?.randomise,
                 types.BOOLEAN,
                 false,
             ),
@@ -521,11 +615,9 @@ export class Emitter {
             types.NUMBER,
             100,
         )
-        this.duration = utils.ensureTypedArg(
-            options.duration,
-            types.NUMBER,
-            null,
-        )
+        this.duration =
+            typeof options.duration === "number" ? options.duration : null
+
         this.isStatic = utils.ensureTypedArg(
             options.isStatic,
             types.BOOLEAN,
