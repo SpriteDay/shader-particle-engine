@@ -8,6 +8,11 @@
 import { distributions, valueOverLifetimeLength } from "./constants"
 import { shaderChunks } from "./shaders/shaderChunks"
 import { shaders } from "./shaders/shaders"
+import { Emitter } from "./core/Emitter"
+import { Group } from "./core/Group"
+import { utils } from "./core/utils"
+import { ShaderAttribute } from "./helpers/ShaderAttribute"
+import { TypedArrayHelper } from "./helpers/TypedArrayHelper"
 
 /**
  * Namespace for Shader Particle Engine.
@@ -22,6 +27,11 @@ const SPE = {
     valueOverLifetimeLength,
     shaderChunks,
     shaders,
+    Emitter,
+    Group,
+    utils,
+    ShaderAttribute,
+    TypedArrayHelper,
 }
 
 export default SPE

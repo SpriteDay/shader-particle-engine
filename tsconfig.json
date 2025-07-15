@@ -20,8 +20,7 @@
         "noFallthroughCasesInSwitch": true,
 
         /* Paths */
-        "declaration": true,
-        "declarationDir": "dist/types"
+        "declaration": true
     },
     "include": ["src"],
     "references": [{ "path": "./tsconfig.node.json" }]
