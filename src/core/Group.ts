@@ -7,6 +7,7 @@
 import * as THREE from "three"
 import { ShaderAttribute } from "../helpers/ShaderAttribute"
 import { utils } from "./utils"
+import { Emitter } from "./Emitter"
 
 /**
  * A map of options to configure an SPE.Group instance.
@@ -63,35 +64,51 @@ import { utils } from "./utils"
 
 type GroupOptions = {
     texture: {
-        value: THREE.Texture
-        frames: THREE.Vector2
-        frameCount: number
-        loop: number
+        value?: THREE.Texture
+        frames?: THREE.Vector2
+        frameCount?: number
+        loop?: number
     }
     fixedTimeStep?: number
     hasPerspective?: boolean
     colorize?: boolean
-    blending: number
+    maxParticleCount?: number
+    blending?: number
     transparent?: boolean
     alphaTest?: number
     depthWrite?: boolean
     depthTest?: boolean
     fog?: boolean
-    scale: number
+    scale?: number
 }
 export class Group {
+    uuid: string
+    fixedTimeStep: number
+    texture: THREE.Texture | null
+    textureFrames: THREE.Vector2
+    textureFrameCount: number
+    textureLoop: number
+    hasPerspective: boolean
+    colorize: boolean
+    maxParticleCount: number | null
+    blending: number
+    transparent: boolean
+    alphaTest: number
+    depthWrite: boolean
+    depthTest: boolean
+    fog: boolean
+    scale: number
+    emitters: Emitter[]
+    emitterIDs: string[]
+
     constructor(options: GroupOptions) {
         "use strict"
 
         var types = utils.types
 
         // Ensure we have a map of options to play with
-        options = utils.ensureTypedArg(options, types.OBJECT, {})
-        options.texture = utils.ensureTypedArg(
-            options.texture,
-            types.OBJECT,
-            {},
-        )
+        utils.ensureTypedArg(options, types.OBJECT, {})
+        utils.ensureTypedArg(options.texture, types.OBJECT, {})
 
         // Assign a UUID to this instance
         this.uuid = THREE.MathUtils.generateUUID()
@@ -139,11 +156,10 @@ export class Group {
             true,
         )
 
-        this.maxParticleCount = utils.ensureTypedArg(
-            options.maxParticleCount,
-            types.NUMBER,
-            null,
-        )
+        this.maxParticleCount =
+            typeof options.maxParticleCount === "number"
+                ? options.maxParticleCount
+                : null
 
         // Set properties used to define the ShaderMaterial's appearance.
         this.blending = utils.ensureTypedArg(
@@ -156,8 +172,10 @@ export class Group {
             types.BOOLEAN,
             true,
         )
-        this.alphaTest = parseFloat(
-            utils.ensureTypedArg(options.alphaTest, types.NUMBER, 0.0),
+        this.alphaTest = utils.ensureTypedArg(
+            options.alphaTest,
+            types.NUMBER,
+            0.0,
         )
         this.depthWrite = utils.ensureTypedArg(
             options.depthWrite,
