@@ -1,3 +1,5 @@
+import * as THREE from "three"
+
 type TypeMap = {
     boolean: boolean
     string: string
@@ -6,6 +8,34 @@ type TypeMap = {
 }
 
 type TypeString = keyof TypeMap
+
+type Constructor<T = object> = new (...args: unknown[]) => T
+
+type EnsureArrayTypedArg = {
+    <T extends TypeString>(
+        arg: unknown[],
+        type: T,
+        defaultValue: TypeMap[T][],
+    ): TypeMap[T][]
+    <T extends TypeString>(
+        arg: unknown,
+        type: T,
+        defaultValue: TypeMap[T],
+    ): TypeMap[T]
+}
+
+type EnsureArrayInstanceOf = {
+    <T extends object>(
+        arg: unknown[],
+        instance: Constructor<T>,
+        defaultValue: T[],
+    ): T[]
+    <T extends object>(
+        arg: unknown,
+        instance: Constructor<T>,
+        defaultValue: T,
+    ): T
+}
 
 /**
  * A bunch of utility functions used throughout the library.
@@ -84,8 +114,8 @@ export const utils = {
     ensureArrayTypedArg: function <T extends TypeString>(
         arg: unknown,
         type: T,
-        defaultValue: TypeMap[T],
-    ): TypeMap[T][] | TypeMap[T] {
+        defaultValue: TypeMap[T] | TypeMap[T][],
+    ): TypeMap[T] | TypeMap[T][] {
         "use strict"
 
         // If the argument being checked is an array, loop through
@@ -94,17 +124,17 @@ export const utils = {
         if (Array.isArray(arg)) {
             for (var i = arg.length - 1; i >= 0; --i) {
                 if (typeof arg[i] !== type) {
-                    return defaultValue
+                    return defaultValue as TypeMap[T][]
                 }
             }
 
-            return arg
+            return arg as TypeMap[T][]
         }
 
         // If the arg isn't an array then just fallback to
         // checking the type.
-        return this.ensureTypedArg(arg, type, defaultValue)
-    },
+        return utils.ensureTypedArg(arg, type, defaultValue as TypeMap[T])
+    } as EnsureArrayTypedArg,
 
     /**
      * Ensures the given value is an instance of a constructor function.
@@ -114,7 +144,11 @@ export const utils = {
      * @param  {Object} defaultValue A default fallback value if instance check fails
      * @return {Object}              The given value if type check passes, or the default value if it fails.
      */
-    ensureInstanceOf: function (arg, instance, defaultValue) {
+    ensureInstanceOf: function <T>(
+        arg: unknown,
+        instance: Constructor<T> | undefined,
+        defaultValue: T,
+    ): T {
         "use strict"
 
         if (instance !== undefined && arg instanceof instance) {
@@ -136,7 +170,18 @@ export const utils = {
      * @param  {Object} defaultValue A default fallback value if instance check fails
      * @return {Object}              The given value if type check passes, or the default value if it fails.
      */
-    ensureArrayInstanceOf: function (arg, instance, defaultValue) {
+    ensureArrayInstanceOf: function <T extends object>(
+        this: {
+            ensureInstanceOf: (
+                arg: unknown,
+                instance: Constructor<T>,
+                defaultValue: T,
+            ) => T
+        },
+        arg: unknown,
+        instance: Constructor<T>,
+        defaultValue: T | T[],
+    ): T | T[] {
         "use strict"
 
         // If the argument being checked is an array, loop through
@@ -144,21 +189,18 @@ export const utils = {
         // falling back to the defaultValue if any aren't.
         if (Array.isArray(arg)) {
             for (var i = arg.length - 1; i >= 0; --i) {
-                if (
-                    instance !== undefined &&
-                    arg[i] instanceof instance === false
-                ) {
-                    return defaultValue
+                if (instance !== undefined && !(arg[i] instanceof instance)) {
+                    return defaultValue as T[]
                 }
             }
 
-            return arg
+            return arg as T[]
         }
 
         // If the arg isn't an array then just fallback to
         // checking the type.
-        return this.ensureInstanceOf(arg, instance, defaultValue)
-    },
+        return this.ensureInstanceOf(arg, instance, defaultValue as T)
+    } as EnsureArrayInstanceOf,
 
     /**
      * Ensures that any "value-over-lifetime" properties of an emitter are
