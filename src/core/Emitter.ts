@@ -439,7 +439,7 @@ export class Emitter {
                 types.NUMBER,
                 0,
             ),
-        } as any
+        }
 
         this.velocity = {
             _value: utils.ensureInstanceOf(
@@ -462,7 +462,7 @@ export class Emitter {
                 types.BOOLEAN,
                 false,
             ),
-        } as any
+        }
 
         this.acceleration = {
             _value: utils.ensureInstanceOf(
@@ -485,7 +485,7 @@ export class Emitter {
                 types.BOOLEAN,
                 false,
             ),
-        } as any
+        }
 
         this.drag = {
             _value: utils.ensureTypedArg(options.drag.value, types.NUMBER, 0),
@@ -495,7 +495,7 @@ export class Emitter {
                 types.BOOLEAN,
                 false,
             ),
-        } as any
+        }
 
         this.wiggle = {
             _value: utils.ensureTypedArg(options.wiggle.value, types.NUMBER, 0),
@@ -504,7 +504,7 @@ export class Emitter {
                 types.NUMBER,
                 0,
             ),
-        } as any
+        }
 
         this.rotation = {
             _axis: utils.ensureInstanceOf(
@@ -542,7 +542,7 @@ export class Emitter {
                 types.BOOLEAN,
                 false,
             ),
-        } as any
+        }
 
         this.maxAge = {
             _value: utils.ensureTypedArg(options.maxAge.value, types.NUMBER, 2),
@@ -551,7 +551,7 @@ export class Emitter {
                 types.NUMBER,
                 0,
             ),
-        } as any
+        }
 
         // The following properties can support either single values, or an array of values that change
         // the property over a particle's lifetime (value over lifetime).
@@ -571,7 +571,7 @@ export class Emitter {
                 types.BOOLEAN,
                 false,
             ),
-        } as any
+        }
 
         this.opacity = {
             _value: utils.ensureArrayTypedArg(
@@ -589,7 +589,7 @@ export class Emitter {
                 types.BOOLEAN,
                 false,
             ),
-        } as any
+        }
 
         this.size = {
             _value: utils.ensureArrayTypedArg(
@@ -607,7 +607,7 @@ export class Emitter {
                 types.BOOLEAN,
                 false,
             ),
-        } as any
+        }
 
         this.angle = {
             _value: utils.ensureArrayTypedArg(
@@ -625,7 +625,7 @@ export class Emitter {
                 types.BOOLEAN,
                 false,
             ),
-        } as any
+        }
 
         // Assign renaining option values.
         this.particleCount = utils.ensureTypedArg(
@@ -760,7 +760,7 @@ export class Emitter {
                 types.BOOLEAN,
                 false,
             ),
-        } as any
+        }
 
         this.updateFlags = {}
         this.updateCounts = {}
@@ -830,13 +830,13 @@ export class Emitter {
 
                 Object.defineProperty(propObj, name, {
                     get: (function (prop) {
-                        return function () {
-                            return (this as any)[prop]
+                        return function (this: any) {
+                            return this[prop]
                         }
                     })(i),
 
                     set: (function (prop) {
-                        return function (value) {
+                        return function (this: any, value: any) {
                             var mapName = self.updateMap[propName],
                                 prevValue = this[prop],
                                 length = valueOverLifetimeLength
