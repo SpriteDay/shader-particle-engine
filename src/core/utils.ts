@@ -1,4 +1,5 @@
 import * as THREE from "three"
+import { ShaderAttribute } from "../helpers/ShaderAttribute"
 
 type TypeMap = {
     boolean: boolean
@@ -525,7 +526,13 @@ export const utils = {
      * @param  {Object} spread      THREE.Vector3 instance describing the random variance to apply to the start value.
      * @param  {Object} spreadClamp THREE.Vector3 instance describing the multiples to clamp the randomness to.
      */
-    randomVector3: function (attribute, index, base, spread, spreadClamp) {
+    randomVector3: function (
+        attribute: ShaderAttribute,
+        index: number,
+        base: THREE.Vector3,
+        spread: THREE.Vector3,
+        spreadClamp: THREE.Vector3,
+    ) {
         "use strict"
 
         var x = base.x + (Math.random() * spread.x - spread.x * 0.5),
@@ -548,7 +555,7 @@ export const utils = {
                 this.roundToNearestMultiple(z, spreadClamp.z)
         }
 
-        attribute.typedArray.setVec3Components(index, x, y, z)
+        attribute.typedArray?.setVec3Components(index, x, y, z)
     },
 
     /**
@@ -559,7 +566,12 @@ export const utils = {
      * @param  {Object} base      THREE.Color instance describing the start color.
      * @param  {Object} spread    THREE.Vector3 instance describing the random variance to apply to the start color.
      */
-    randomColor: function (attribute, index, base, spread) {
+    randomColor: function (
+        attribute: ShaderAttribute,
+        index: number,
+        base: THREE.Color,
+        spread: THREE.Vector3,
+    ) {
         "use strict"
 
         var r = base.r + Math.random() * spread.x,
@@ -570,7 +582,7 @@ export const utils = {
         g = this.clamp(g, 0, 1)
         b = this.clamp(b, 0, 1)
 
-        attribute.typedArray.setVec3Components(index, r, g, b)
+        attribute.typedArray?.setVec3Components(index, r, g, b)
     },
 
     randomColorAsHex: (function () {
@@ -586,7 +598,12 @@ export const utils = {
          * @param  {Object} base      THREE.Color instance describing the start color.
          * @param  {Object} spread    THREE.Vector3 instance describing the random variance to apply to the start color.
          */
-        return function (attribute, index, base, spread) {
+        return function (
+            attribute: ShaderAttribute,
+            index: number,
+            base: THREE.Color[],
+            spread: THREE.Vector3[],
+        ) {
             var numItems = base.length,
                 colors = []
 
@@ -602,14 +619,14 @@ export const utils = {
                 workingColor.b +=
                     Math.random() * spreadVector.z - spreadVector.z * 0.5
 
-                workingColor.r = this.clamp(workingColor.r, 0, 1)
-                workingColor.g = this.clamp(workingColor.g, 0, 1)
-                workingColor.b = this.clamp(workingColor.b, 0, 1)
+                workingColor.r = utils.clamp(workingColor.r, 0, 1)
+                workingColor.g = utils.clamp(workingColor.g, 0, 1)
+                workingColor.b = utils.clamp(workingColor.b, 0, 1)
 
                 colors.push(workingColor.getHex())
             }
 
-            attribute.typedArray.setVec4Components(
+            attribute.typedArray?.setVec4Components(
                 index,
                 colors[0],
                 colors[1],
@@ -628,13 +645,18 @@ export const utils = {
      * @param  {Object} start       THREE.Vector3 instance describing the start line position.
      * @param  {Object} end         THREE.Vector3 instance describing the end line position.
      */
-    randomVector3OnLine: function (attribute, index, start, end) {
+    randomVector3OnLine: function (
+        attribute: ShaderAttribute,
+        index: number,
+        start: THREE.Vector3,
+        end: THREE.Vector3,
+    ) {
         "use strict"
         var pos = start.clone()
 
         pos.lerp(end, Math.random())
 
-        attribute.typedArray.setVec3Components(index, pos.x, pos.y, pos.z)
+        attribute.typedArray?.setVec3Components(index, pos.x, pos.y, pos.z)
     },
 
     /**
@@ -659,14 +681,14 @@ export const utils = {
      * @param  {Number} radiusSpreadClamp What numeric multiple the projected value should be clamped to.
      */
     randomVector3OnSphere: function (
-        attribute,
-        index,
-        base,
-        radius,
-        radiusSpread,
-        radiusScale,
-        radiusSpreadClamp,
-        distributionClamp,
+        attribute: ShaderAttribute,
+        index: number,
+        base: THREE.Vector3,
+        radius: number,
+        radiusSpread: number,
+        radiusScale: THREE.Vector3,
+        radiusSpreadClamp: number,
+        distributionClamp?: number,
     ) {
         "use strict"
 
@@ -698,10 +720,10 @@ export const utils = {
         z += base.z
 
         // Set the values in the typed array.
-        attribute.typedArray.setVec3Components(index, x, y, z)
+        attribute.typedArray?.setVec3Components(index, x, y, z)
     },
 
-    seededRandom: function (seed) {
+    seededRandom: function (seed: number) {
         var x = Math.sin(seed) * 10000
         return x - (x | 0)
     },
@@ -719,13 +741,13 @@ export const utils = {
      * @param  {Number} radiusSpreadClamp What numeric multiple the projected value should be clamped to.
      */
     randomVector3OnDisc: function (
-        attribute,
-        index,
-        base,
-        radius,
-        radiusSpread,
-        radiusScale,
-        radiusSpreadClamp,
+        attribute: ShaderAttribute,
+        index: number,
+        base: THREE.Vector3,
+        radius: number,
+        radiusSpread: number,
+        radiusScale: THREE.Vector3,
+        radiusSpreadClamp: number,
     ) {
         "use strict"
 
@@ -753,7 +775,7 @@ export const utils = {
         z += base.z
 
         // Set the values in the typed array.
-        attribute.typedArray.setVec3Components(index, x, y, z)
+        attribute.typedArray?.setVec3Components(index, x, y, z)
     },
 
     randomDirectionVector3OnSphere: (function () {
@@ -775,14 +797,14 @@ export const utils = {
          * @param  {Number} speedSpread     The amount of randomness to apply to the magnitude.
          */
         return function (
-            attribute,
-            index,
-            posX,
-            posY,
-            posZ,
-            emitterPosition,
-            speed,
-            speedSpread,
+            attribute: ShaderAttribute,
+            index: number,
+            posX: number,
+            posY: number,
+            posZ: number,
+            emitterPosition: THREE.Vector3,
+            speed: number,
+            speedSpread: number,
         ) {
             v.copy(emitterPosition)
 
@@ -790,9 +812,9 @@ export const utils = {
             v.y -= posY
             v.z -= posZ
 
-            v.normalize().multiplyScalar(-this.randomFloat(speed, speedSpread))
+            v.normalize().multiplyScalar(-utils.randomFloat(speed, speedSpread))
 
-            attribute.typedArray.setVec3Components(index, v.x, v.y, v.z)
+            attribute.typedArray?.setVec3Components(index, v.x, v.y, v.z)
         }
     })(),
 
@@ -815,14 +837,14 @@ export const utils = {
          * @param  {Number} speedSpread     The amount of randomness to apply to the magnitude.
          */
         return function (
-            attribute,
-            index,
-            posX,
-            posY,
-            posZ,
-            emitterPosition,
-            speed,
-            speedSpread,
+            attribute: ShaderAttribute,
+            index: number,
+            posX: number,
+            posY: number,
+            posZ: number,
+            emitterPosition: THREE.Vector3,
+            speed: number,
+            speedSpread: number,
         ) {
             v.copy(emitterPosition)
 
@@ -830,9 +852,9 @@ export const utils = {
             v.y -= posY
             v.z -= posZ
 
-            v.normalize().multiplyScalar(-this.randomFloat(speed, speedSpread))
+            v.normalize().multiplyScalar(-utils.randomFloat(speed, speedSpread))
 
-            attribute.typedArray.setVec3Components(index, v.x, v.y, 0)
+            attribute.typedArray?.setVec3Components(index, v.x, v.y, 0)
         }
     })(),
 
@@ -852,7 +874,7 @@ export const utils = {
          * @param  {Object} axisSpread THREE.Vector3 instance describing the amount of randomness to apply to the rotation axis.
          * @return {Number}            The packed rotation axis, with randomness.
          */
-        return function (axis, axisSpread) {
+        return function (axis: THREE.Vector3, axisSpread: THREE.Vector3) {
             v.copy(axis).normalize()
             vSpread.copy(axisSpread).normalize()
 
