@@ -60,8 +60,10 @@ import { utils } from "./utils"
  * @constructor
  * @param {GroupOptions} options A map of options to configure the group instance.
  */
+
+type GroupOptions = {}
 export class Group {
-    constructor(options) {
+    constructor(options: GroupOptions) {
         "use strict"
 
         var types = utils.types

@@ -1,6 +1,6 @@
 import * as THREE from "three"
 import { utils } from "./utils"
-import { valueOverLifetimeLength } from "../constants"
+import { distributions, valueOverLifetimeLength } from "../constants"
 
 /**
  * An SPE.Emitter instance.
@@ -153,8 +153,10 @@ import { valueOverLifetimeLength } from "../constants"
  *
  * @param {EmitterOptions} options A map of options to configure the emitter.
  */
+
+type EmitterOptions = {}
 export class Emitter {
-    constructor(options) {
+    constructor(options: EmitterOptions) {
         "use strict"
 
         var types = utils.types,

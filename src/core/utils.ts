@@ -9,7 +9,8 @@ type TypeMap = {
 
 type TypeString = keyof TypeMap
 
-type Constructor<T = object> = new (...args: unknown[]) => T
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+type Constructor<T = object> = new (...args: any[]) => T
 
 type EnsureArrayTypedArg = {
     <T extends TypeString>(
@@ -171,13 +172,6 @@ export const utils = {
      * @return {Object}              The given value if type check passes, or the default value if it fails.
      */
     ensureArrayInstanceOf: function <T extends object>(
-        this: {
-            ensureInstanceOf: (
-                arg: unknown,
-                instance: Constructor<T>,
-                defaultValue: T,
-            ) => T
-        },
         arg: unknown,
         instance: Constructor<T>,
         defaultValue: T | T[],
@@ -199,7 +193,7 @@ export const utils = {
 
         // If the arg isn't an array then just fallback to
         // checking the type.
-        return this.ensureInstanceOf(arg, instance, defaultValue as T)
+        return utils.ensureInstanceOf(arg, instance, defaultValue as T)
     } as EnsureArrayInstanceOf,
 
     /**
@@ -215,9 +209,12 @@ export const utils = {
      * @param  {Number} maxLength The maximum length of the array to create.
      */
     ensureValueOverLifetimeCompliance: function (
-        property,
-        minLength,
-        maxLength,
+        property: {
+            _value: unknown[]
+            _spread: unknown[]
+        },
+        minLength: number,
+        maxLength: number,
     ) {
         "use strict"
 
@@ -233,12 +230,12 @@ export const utils = {
             property._spread = [property._spread]
         }
 
-        var valueLength = this.clamp(
+        var valueLength = utils.clamp(
                 property._value.length,
                 minLength,
                 maxLength,
             ),
-            spreadLength = this.clamp(
+            spreadLength = utils.clamp(
                 property._spread.length,
                 minLength,
                 maxLength,
@@ -272,13 +269,13 @@ export const utils = {
      * @param  {Number} newLength The length the array should be interpolated to.
      * @return {Array}           The interpolated array.
      */
-    interpolateArray: function (srcArray, newLength) {
+    interpolateArray: function <T>(srcArray: T[], newLength: number): T[] {
         "use strict"
 
         var sourceLength = srcArray.length,
             newArray = [
-                typeof srcArray[0].clone === "function"
-                    ? srcArray[0].clone()
+                typeof (srcArray[0] as any).clone === "function"
+                    ? (srcArray[0] as any).clone()
                     : srcArray[0],
             ],
             factor = (sourceLength - 1) / (newLength - 1)
@@ -297,8 +294,8 @@ export const utils = {
         }
 
         newArray.push(
-            typeof srcArray[sourceLength - 1].clone === "function"
-                ? srcArray[sourceLength - 1].clone()
+            typeof (srcArray[sourceLength - 1] as any).clone === "function"
+                ? (srcArray[sourceLength - 1] as any).clone()
                 : srcArray[sourceLength - 1],
         )
 
@@ -312,7 +309,7 @@ export const utils = {
      * @param  {Number} max   The maximum value.
      * @return {Number}       The clamped number.
      */
-    clamp: function (value, min, max) {
+    clamp: function (value: number, min: number, max: number) {
         "use strict"
 
         return Math.max(min, Math.min(value, max))
@@ -327,7 +324,7 @@ export const utils = {
      * @param  {Boolean} randomise Whether the value should be randomised.
      * @return {Number}           The result of the operation.
      */
-    zeroToEpsilon: function (value, randomise) {
+    zeroToEpsilon: function (value: number, randomise?: boolean) {
         "use strict"
 
         var epsilon = 0.00001,
@@ -362,46 +359,61 @@ export const utils = {
      *                                               the start and end arguments aren't a supported type, or
      *                                               if their types do not match.
      */
-    lerpTypeAgnostic: function (start, end, delta) {
+    lerpTypeAgnostic: function (
+        start:
+            | number
+            | THREE.Vector2
+            | THREE.Vector3
+            | THREE.Vector4
+            | THREE.Color
+            | unknown,
+        end:
+            | number
+            | THREE.Vector2
+            | THREE.Vector3
+            | THREE.Vector4
+            | THREE.Color
+            | unknown,
+        delta: number,
+    ) {
         "use strict"
 
-        var types = this.types,
-            out
+        var out
 
-        if (typeof start === types.NUMBER && typeof end === types.NUMBER) {
+        if (typeof start === "number" && typeof end === "number") {
             return start + (end - start) * delta
         } else if (
             start instanceof THREE.Vector2 &&
             end instanceof THREE.Vector2
         ) {
             out = start.clone()
-            out.x = this.lerp(start.x, end.x, delta)
-            out.y = this.lerp(start.y, end.y, delta)
+            out.x = utils.lerp(start.x, end.x, delta)
+            out.y = utils.lerp(start.y, end.y, delta)
             return out
         } else if (
             start instanceof THREE.Vector3 &&
             end instanceof THREE.Vector3
         ) {
             out = start.clone()
-            out.x = this.lerp(start.x, end.x, delta)
-            out.y = this.lerp(start.y, end.y, delta)
-            out.z = this.lerp(start.z, end.z, delta)
+            out.x = utils.lerp(start.x, end.x, delta)
+            out.y = utils.lerp(start.y, end.y, delta)
+            out.z = utils.lerp(start.z, end.z, delta)
             return out
         } else if (
             start instanceof THREE.Vector4 &&
             end instanceof THREE.Vector4
         ) {
             out = start.clone()
-            out.x = this.lerp(start.x, end.x, delta)
-            out.y = this.lerp(start.y, end.y, delta)
-            out.z = this.lerp(start.z, end.z, delta)
-            out.w = this.lerp(start.w, end.w, delta)
+            out.x = utils.lerp(start.x, end.x, delta)
+            out.y = utils.lerp(start.y, end.y, delta)
+            out.z = utils.lerp(start.z, end.z, delta)
+            out.w = utils.lerp(start.w, end.w, delta)
             return out
         } else if (start instanceof THREE.Color && end instanceof THREE.Color) {
             out = start.clone()
-            out.r = this.lerp(start.r, end.r, delta)
-            out.g = this.lerp(start.g, end.g, delta)
-            out.b = this.lerp(start.b, end.b, delta)
+            out.r = utils.lerp(start.r, end.r, delta)
+            out.g = utils.lerp(start.g, end.g, delta)
+            out.b = utils.lerp(start.b, end.b, delta)
             return out
         } else {
             console.warn(
@@ -419,7 +431,7 @@ export const utils = {
      * @param  {Number} delta The position to interpolate to.
      * @return {Number}       The result of the lerp operation.
      */
-    lerp: function (start, end, delta) {
+    lerp: function (start: number, end: number, delta: number) {
         "use strict"
         return start + (end - start) * delta
     },
@@ -431,7 +443,7 @@ export const utils = {
      * @param  {Number} multiple The multiple to round to.
      * @return {Number}          The result of the round operation.
      */
-    roundToNearestMultiple: function (n, multiple) {
+    roundToNearestMultiple: function (n: number, multiple: number) {
         "use strict"
 
         var remainder = 0
@@ -459,7 +471,7 @@ export const utils = {
      * @param  {Array} array The array of values to check equality of.
      * @return {Boolean}       Whether the array's values are all equal or not.
      */
-    arrayValuesAreEqual: function (array) {
+    arrayValuesAreEqual: function (array: unknown[]) {
         "use strict"
 
         for (var i = 0; i < array.length - 1; ++i) {
@@ -498,7 +510,7 @@ export const utils = {
      * @param  {Number} spread The size of the random variance to apply.
      * @return {Number}        A randomised number.
      */
-    randomFloat: function (base, spread) {
+    randomFloat: function (base: number, spread: number) {
         "use strict"
         return base + spread * (Math.random() - 0.5)
     },
