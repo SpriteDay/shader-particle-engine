@@ -48,3 +48,7 @@ export type TypedArrayConstructor =
 export type TypedArray = InstanceType<TypedArrayConstructor>
 
 export type Distribution = (typeof distributions)[keyof typeof distributions]
+
+export type WithGetters<T> = T & {
+    [K in keyof T as K extends `_${infer P}` ? P : never]: T[K]
+}

@@ -1,7 +1,7 @@
 import * as THREE from "three"
 import { utils } from "./utils"
 import { distributions, valueOverLifetimeLength } from "../constants"
-import { Distribution } from "../types"
+import { Distribution, WithGetters } from "../types"
 import { ShaderAttribute } from "../helpers/ShaderAttribute"
 import { Group } from "./Group"
 
@@ -231,7 +231,7 @@ type EmitterOptions = {
 export class Emitter {
     uuid: string
     type: Distribution
-    position: {
+    position: WithGetters<{
         _value: THREE.Vector3
         _spread: THREE.Vector3
         _spreadClamp: THREE.Vector3
@@ -240,29 +240,29 @@ export class Emitter {
         _radius: number
         _radiusScale: THREE.Vector3
         _distributionClamp: number
-    }
-    velocity: {
+    }>
+    velocity: WithGetters<{
         _value: THREE.Vector3
         _spread: THREE.Vector3
         _distribution: Distribution
         _randomise: boolean
-    }
-    acceleration: {
+    }>
+    acceleration: WithGetters<{
         _value: THREE.Vector3
         _spread: THREE.Vector3
         _distribution: Distribution
         _randomise: boolean
-    }
-    drag: {
+    }>
+    drag: WithGetters<{
         _value: number
         _spread: number
         _randomise: boolean
-    }
-    wiggle: {
+    }>
+    wiggle: WithGetters<{
         _value: number
         _spread: number
-    }
-    rotation: {
+    }>
+    rotation: WithGetters<{
         _axis: THREE.Vector3
         _axisSpread: THREE.Vector3
         _angle: number
@@ -270,31 +270,31 @@ export class Emitter {
         _static: boolean
         _center: THREE.Vector3
         _randomise: boolean
-    }
-    maxAge: {
+    }>
+    maxAge: WithGetters<{
         _value: number
         _spread: number
-    }
-    color: {
+    }>
+    color: WithGetters<{
         _value: THREE.Color | THREE.Color[]
         _spread: THREE.Vector3 | THREE.Vector3[]
         _randomise: boolean
-    }
-    opacity: {
+    }>
+    opacity: WithGetters<{
         _value: number | number[]
         _spread: number | number[]
         _randomise: boolean
-    }
-    size: {
+    }>
+    size: WithGetters<{
         _value: number | number[]
         _spread: number | number[]
         _randomise: boolean
-    }
-    angle: {
+    }>
+    angle: WithGetters<{
         _value: number | number[]
         _spread: number | number[]
         _randomise: boolean
-    }
+    }>
     particleCount: number
     duration: number | null
     isStatic: boolean
@@ -439,7 +439,7 @@ export class Emitter {
                 types.NUMBER,
                 0,
             ),
-        }
+        } as any
 
         this.velocity = {
             _value: utils.ensureInstanceOf(
@@ -462,7 +462,7 @@ export class Emitter {
                 types.BOOLEAN,
                 false,
             ),
-        }
+        } as any
 
         this.acceleration = {
             _value: utils.ensureInstanceOf(
@@ -485,7 +485,7 @@ export class Emitter {
                 types.BOOLEAN,
                 false,
             ),
-        }
+        } as any
 
         this.drag = {
             _value: utils.ensureTypedArg(options.drag.value, types.NUMBER, 0),
@@ -495,7 +495,7 @@ export class Emitter {
                 types.BOOLEAN,
                 false,
             ),
-        }
+        } as any
 
         this.wiggle = {
             _value: utils.ensureTypedArg(options.wiggle.value, types.NUMBER, 0),
@@ -504,7 +504,7 @@ export class Emitter {
                 types.NUMBER,
                 0,
             ),
-        }
+        } as any
 
         this.rotation = {
             _axis: utils.ensureInstanceOf(
@@ -542,7 +542,7 @@ export class Emitter {
                 types.BOOLEAN,
                 false,
             ),
-        }
+        } as any
 
         this.maxAge = {
             _value: utils.ensureTypedArg(options.maxAge.value, types.NUMBER, 2),
@@ -551,7 +551,7 @@ export class Emitter {
                 types.NUMBER,
                 0,
             ),
-        }
+        } as any
 
         // The following properties can support either single values, or an array of values that change
         // the property over a particle's lifetime (value over lifetime).
@@ -571,7 +571,7 @@ export class Emitter {
                 types.BOOLEAN,
                 false,
             ),
-        }
+        } as any
 
         this.opacity = {
             _value: utils.ensureArrayTypedArg(
@@ -589,7 +589,7 @@ export class Emitter {
                 types.BOOLEAN,
                 false,
             ),
-        }
+        } as any
 
         this.size = {
             _value: utils.ensureArrayTypedArg(
@@ -607,7 +607,7 @@ export class Emitter {
                 types.BOOLEAN,
                 false,
             ),
-        }
+        } as any
 
         this.angle = {
             _value: utils.ensureArrayTypedArg(
@@ -625,7 +625,7 @@ export class Emitter {
                 types.BOOLEAN,
                 false,
             ),
-        }
+        } as any
 
         // Assign renaining option values.
         this.particleCount = utils.ensureTypedArg(
@@ -760,7 +760,7 @@ export class Emitter {
                 types.BOOLEAN,
                 false,
             ),
-        }
+        } as any
 
         this.updateFlags = {}
         this.updateCounts = {}
@@ -785,7 +785,7 @@ export class Emitter {
             if (this.updateMap.hasOwnProperty(i)) {
                 this.updateCounts[this.updateMap[i]] = 0.0
                 this.updateFlags[this.updateMap[i]] = false
-                this._createGetterSetters(this[i], i)
+                this._createGetterSetters((this as any)[i], i)
             }
         }
 
@@ -819,7 +819,7 @@ export class Emitter {
         )
     }
 
-    _createGetterSetters(propObj, propName) {
+    _createGetterSetters(propObj: any, propName: string) {
         "use strict"
 
         var self = this
@@ -831,7 +831,7 @@ export class Emitter {
                 Object.defineProperty(propObj, name, {
                     get: (function (prop) {
                         return function () {
-                            return this[prop]
+                            return (this as any)[prop]
                         }
                     })(i),
 
@@ -839,19 +839,19 @@ export class Emitter {
                         return function (value) {
                             var mapName = self.updateMap[propName],
                                 prevValue = this[prop],
-                                length = SPE.valueOverLifetimeLength
+                                length = valueOverLifetimeLength
 
                             if (prop === "_rotationCenter") {
                                 self.updateFlags.rotationCenter = true
                                 self.updateCounts.rotationCenter = 0.0
                             } else if (prop === "_randomise") {
-                                self.resetFlags[mapName] = value
+                                ;(self.resetFlags as any)[mapName] = value
                             } else {
-                                self.updateFlags[mapName] = true
-                                self.updateCounts[mapName] = 0.0
+                                ;(self.updateFlags as any)[mapName] = true
+                                ;(self.updateCounts as any)[mapName] = 0.0
                             }
 
-                            self.group._updateDefines()
+                            self.group?._updateDefines()
 
                             this[prop] = value
 
@@ -859,7 +859,7 @@ export class Emitter {
                             // sure the provided value is interpolated correctly.
                             if (Array.isArray(prevValue)) {
                                 utils.ensureValueOverLifetimeCompliance(
-                                    self[propName],
+                                    (self as any)[propName],
                                     length,
                                     length,
                                 )
