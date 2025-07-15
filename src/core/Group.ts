@@ -4,7 +4,9 @@
  * @see SPE.Group
  */
 
+import * as THREE from "three"
 import { ShaderAttribute } from "../helpers/ShaderAttribute"
+import { utils } from "./utils"
 
 /**
  * A map of options to configure an SPE.Group instance.
@@ -62,8 +64,7 @@ export class Group {
     constructor(options) {
         "use strict"
 
-        var utils = SPE.utils,
-            types = utils.types
+        var types = utils.types
 
         // Ensure we have a map of options to play with
         options = utils.ensureTypedArg(options, types.OBJECT, {})
@@ -74,7 +75,7 @@ export class Group {
         )
 
         // Assign a UUID to this instance
-        this.uuid = THREE.Math.generateUUID()
+        this.uuid = THREE.MathUtils.generateUUID()
 
         // If no `deltaTime` value is passed to the `SPE.Group.tick` function,
         // the value of this property will be used to advance the simulation.

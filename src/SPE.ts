@@ -1,8 +1,8 @@
 /**
  * @typedef {Number} distribution
- * @property {Number} SPE.distributions.BOX Values will be distributed within a box.
- * @property {Number} SPE.distributions.SPHERE Values will be distributed within a sphere.
- * @property {Number} SPE.distributions.DISC Values will be distributed within a 2D disc.
+ * @property {Number} distributions.BOX Values will be distributed within a box.
+ * @property {Number} distributions.SPHERE Values will be distributed within a sphere.
+ * @property {Number} distributions.DISC Values will be distributed within a 2D disc.
  */
 
 import { distributions, valueOverLifetimeLength } from "./constants"

@@ -1,3 +1,7 @@
+import * as THREE from "three"
+import { utils } from "./utils"
+import { valueOverLifetimeLength } from "../constants"
+
 /**
  * An SPE.Emitter instance.
  * @typedef {Object} Emitter
@@ -11,7 +15,7 @@
  *
  * @property {distribution} [type=BOX] The default distribution this emitter should use to control
  *                         its particle's spawn position and force behaviour.
- *                         Must be an SPE.distributions.* value.
+ *                         Must be an distributions.* value.
  *
  *
  * @property {Number} [particleCount=100] The total number of particles this emitter will hold. NOTE: this is not the number
@@ -153,9 +157,8 @@ export class Emitter {
     constructor(options) {
         "use strict"
 
-        var utils = SPE.utils,
-            types = utils.types,
-            lifetimeLength = SPE.valueOverLifetimeLength
+        var types = utils.types,
+            lifetimeLength = valueOverLifetimeLength
 
         // Ensure we have a map of options to play with,
         // and that each option is in the correct format.
@@ -199,12 +202,12 @@ export class Emitter {
             )
         }
 
-        this.uuid = THREE.Math.generateUUID()
+        this.uuid = THREE.MathUtils.generateUUID()
 
         this.type = utils.ensureTypedArg(
             options.type,
             types.NUMBER,
-            SPE.distributions.BOX,
+            distributions.BOX,
         )
 
         // Start assigning properties...kicking it off with props that DON'T support values over
@@ -673,7 +676,7 @@ export class Emitter {
                             // If the previous value was an array, then make
                             // sure the provided value is interpolated correctly.
                             if (Array.isArray(prevValue)) {
-                                SPE.utils.ensureValueOverLifetimeCompliance(
+                                utils.ensureValueOverLifetimeCompliance(
                                     self[propName],
                                     length,
                                     length,
@@ -762,8 +765,8 @@ export class Emitter {
     _assignPositionValue(index) {
         "use strict"
 
-        var distributions = SPE.distributions,
-            utils = SPE.utils,
+        var distributions = distributions,
+            utils = utils,
             prop = this.position,
             attr = this.attributes.position,
             value = prop._value,
@@ -815,8 +818,8 @@ export class Emitter {
     _assignForceValue(index, attrName) {
         "use strict"
 
-        var distributions = SPE.distributions,
-            utils = SPE.utils,
+        var distributions = distributions,
+            utils = utils,
             prop = this[attrName],
             value = prop._value,
             spread = prop._spread,
@@ -912,7 +915,7 @@ export class Emitter {
 
         var array = this.attributes[propName].typedArray,
             prop = this[propName],
-            utils = SPE.utils,
+            utils = utils,
             value
 
         if (
@@ -937,7 +940,7 @@ export class Emitter {
 
         var array = this.attributes.angle.typedArray,
             prop = this.angle,
-            utils = SPE.utils,
+            utils = utils,
             value
 
         if (
@@ -965,9 +968,9 @@ export class Emitter {
             this.isStatic ? 1 : 0,
             0.0,
             Math.abs(
-                SPE.utils.randomFloat(this.maxAge._value, this.maxAge._spread),
+                utils.randomFloat(this.maxAge._value, this.maxAge._spread),
             ),
-            SPE.utils.randomFloat(this.wiggle._value, this.wiggle._spread),
+            utils.randomFloat(this.wiggle._value, this.wiggle._spread),
         )
     }
 
@@ -976,14 +979,11 @@ export class Emitter {
 
         this.attributes.rotation.typedArray.setVec3Components(
             index,
-            SPE.utils.getPackedRotationAxis(
+            utils.getPackedRotationAxis(
                 this.rotation._axis,
                 this.rotation._axisSpread,
             ),
-            SPE.utils.randomFloat(
-                this.rotation._angle,
-                this.rotation._angleSpread,
-            ),
+            utils.randomFloat(this.rotation._angle, this.rotation._angleSpread),
             this.rotation._static ? 0 : 1,
         )
 
@@ -995,7 +995,7 @@ export class Emitter {
 
     _assignColorValue(index) {
         "use strict"
-        SPE.utils.randomColorAsHex(
+        utils.randomColorAsHex(
             this.attributes.color,
             index,
             this.color._value,

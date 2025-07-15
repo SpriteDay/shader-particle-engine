@@ -44,8 +44,8 @@ type EnsureArrayInstanceOf = {
  */
 export const utils = {
     /**
-     * A map of types used by `SPE.utils.ensureTypedArg` and
-     * `SPE.utils.ensureArrayTypedArg` to compare types against.
+     * A map of types used by `utils.ensureTypedArg` and
+     * `utils.ensureArrayTypedArg` to compare types against.
      *
      * @enum {String}
      */
@@ -73,7 +73,7 @@ export const utils = {
          * @type {String}
          */
         OBJECT: "object",
-    },
+    } as const,
 
     /**
      * Given a value, a type, and a default value to fallback to,
@@ -104,7 +104,7 @@ export const utils = {
      * ensure the given array's contents ALL adhere to the provided type,
      * returning the default value if type check fails.
      *
-     * If the given value to check isn't an Array, delegates to SPE.utils.ensureTypedArg.
+     * If the given value to check isn't an Array, delegates to utils.ensureTypedArg.
      *
      * @param  {Array|boolean|string|number|object} arg          The array of values to check type of.
      * @param  {String} type         The type that should be adhered to.
@@ -163,7 +163,7 @@ export const utils = {
      * matches the given instance constructor falling back to a default value if
      * the check fails.
      *
-     * If given value isn't an Array, delegates to `SPE.utils.ensureInstanceOf`.
+     * If given value isn't an Array, delegates to `utils.ensureInstanceOf`.
      *
      * @param  {Array|Object} arg          The value to perform the instanceof check on.
      * @param  {Function} instance     The constructor of the instance to check against.
@@ -206,7 +206,7 @@ export const utils = {
      * Ensures that any "value-over-lifetime" properties of an emitter are
      * of the correct length (as dictated by `SPE.valueOverLifetimeLength`).
      *
-     * Delegates to `SPE.utils.interpolateArray` for array resizing.
+     * Delegates to `utils.interpolateArray` for array resizing.
      *
      * If properties aren't arrays, then property values are put into one.
      *
@@ -265,7 +265,7 @@ export const utils = {
      *
      * For example, lerping [1, 10], with a `newLength` of 10 will produce [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].
      *
-     * Delegates to `SPE.utils.lerpTypeAgnostic` to perform the actual
+     * Delegates to `utils.lerpTypeAgnostic` to perform the actual
      * interpolation.
      *
      * @param  {Array} srcArray  The array to lerp.
